@@ -1,5 +1,5 @@
 #include <iostream>
-#include <conio.h>
+#include <conio.h>//buat getche
 using namespace std;
 
 bool main_menu(){
