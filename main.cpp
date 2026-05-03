@@ -5,17 +5,17 @@
 using namespace std;
 
 
-struct stat{
+struct stats{
     int hp, physical_atk, magical_atk, physical_def, magical_def, lvl;
 };
 
 struct item{
     string nama;
-    stat stat_i;
+    stats stat_i;
 };
 
 struct hambali{
-    stat stat_p;
+    stats stat_p;
     // index 0 sampai 2 untuk armor (helm , baju , legging) , index 3 untuk senjata
     item equipment[4];
     int mana;
@@ -23,7 +23,7 @@ struct hambali{
 };
 
 struct monster{
-    stat stat_m;
+    stats stat_m;
 };
 
 
@@ -63,7 +63,7 @@ bool main_menu(){
     return true;
 }
 
-int serang(stat stats, int tipe){
+int serang(stats stat, int tipe){
     srand(time(0));
     int variasi = rand() % 11;
     if(rand()%2 == 1){
@@ -71,22 +71,23 @@ int serang(stat stats, int tipe){
     }
 
     if(tipe == 1){
-        return stats.physical_atk + variasi;
+        return stat.physical_atk + variasi;
     }
-    return stats.magical_atk + variasi;
+    return stat.magical_atk + variasi;
 }
 
-int* berlindung(stat stat){
+int* berlindung(stats stat){
     srand(time(0));
     int temp = rand() % stat.magical_def;
     int temp1 = rand() % stat.physical_def;
-
-    int arr[2] = {temp, temp1};
+    int *arr = new int[2];
+    arr[0] = temp;
+    arr[1] = temp1;
     return arr;
 }
 
 
-void cek_stat(stat stat){
+void cek_stat(stats stat){
     cout<<"Level :" <<stat.lvl<<'\n';
     cout<<"Hp : " <<stat.hp<<'\n';
     cout<<"Physical attack : "<<stat.physical_atk<<'\n';
@@ -143,32 +144,34 @@ bool lantai(hambali player, int lantai){
     cout<<": ";
     cin>>aksi;
     switch(aksi){
-        case 1:
+        case 1: {
             int tipe;
             int damage;
-            int *lindungs;
 
             cout<<"1. Physical attack\n";
             cout<<"2. Magical attack\n";
             cin>>tipe;
             switch(tipe){
-                case 1:
+                case 1: {
                     //temp
                     damage = serang(player.stat_p, tipe) - (lindung[1] + musuh.stat_m.physical_def);
                     cout<<"Kamu memberikan damage sebesar " << damage << " physical damage\n";
                     break;
-                case 2:
+                }
+                case 2: {
                     damage = serang(player.stat_p, tipe) - (lindung[0] +musuh.stat_m.magical_def);
                     cout<<"Kamu memberikan damage sebesar " << damage << " magical damage\n";
                     break;
+                }
             }
             if(damage <= 0){
                 damage = 1;
             }
             musuh.stat_m.hp -= damage;
             break;
-        case 2:
-            lindungs = berlindung(player.stat_p);
+        }
+        case 2: {
+            int *lindungs = berlindung(player.stat_p);
             int total_pdef = lindungs[1] + player.stat_p.physical_def;
             int total_mdef = lindungs[0] + player.stat_p.magical_def;
             int cek_damage;
@@ -188,16 +191,19 @@ bool lantai(hambali player, int lantai){
                 cout << "Musuh memberikan damage sebesar " << cek_damage << "magical attack\n";
             }
             break;
-        case 3:
+        }
+        case 3: {
             cout<<"stat musuh\n";
             cek_stat(musuh.stat_m);
             break;
-        case 4:
+        }
+        case 4:{
             cout<<"stat anda\n";
             cek_stat(player.stat_p);
             //temp
             cout<<"Mana : "<<player.mana<<'\n';
             break;
+        }
     }
 
     if(player.stat_p.hp <= 0){
