@@ -231,8 +231,10 @@ int main(){
     player.exp = 0;
     //game loop
     while(game()){
+        if(1 == 0){
         while(lantai(player, lvl_lantai)){
 
+        }
         }
     }
 }
