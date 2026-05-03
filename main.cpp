@@ -2,6 +2,21 @@
 #include <conio.h>//buat getche
 using namespace std;
 
+struct hambali{
+    stat stat_p;
+    // index 0 sampai 2 untuk armor (helm , baju , legging) , index 3 untuk senjata
+    item equipment[4];
+    int exp;
+};
+
+struct stat{
+    int Hp , mana , physical_atk , magical_atk , def , lvl ;
+};
+
+struct item{
+    stat stat_i;
+};
+
 bool main_menu(){
     //menu
     int menu;
