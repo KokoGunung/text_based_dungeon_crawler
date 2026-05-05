@@ -2,7 +2,9 @@
 #include <conio.h>//buat getche
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
 using namespace std;
+
 
 struct stats{
     int hp, physical_atk, magical_atk, physical_def, magical_def, lvl;
@@ -20,13 +22,30 @@ struct hambali{
     // index 0 sampai 2 untuk armor (helm , baju , legging) , index 3 untuk senjata
     item equipment[4];
     int exp;
+    string nama;
 };
 
 struct monster{
     stats stat_m;
 };
 
+hambali player;
 
+void input_data_save_file(){
+
+    string nama_file;
+    cout << "Masukkan nama save file\n";
+    cout << "Nama File: "; getline(cin, nama_file);
+    cin.ignore();
+    cout << "Masukkan nama player\n";
+    cout << "Nama: "; getline(cin, player.nama);
+    nama_file += ".txt";
+    fstream file(nama_file);
+
+    file << player.nama << nama_file;
+    
+    file.close();
+}
 bool main_menu(){
     //menu
     int menu;
@@ -42,17 +61,26 @@ bool main_menu(){
     
     //save file
     cout<<"--------------Pilih save file anda--------------\n";
-    cout<<"1. List save file disini\n";
+    cout<<"1. Buat save file baru\n";
     cout<<"2. Kembali\n";
+    cout<<"3. List save file disini\n";
     cout<<": ";
     cin>>menu;
+
+    if(menu == 1){
+        system("cls");
+        input_data_save_file();
+        getche();
+        return true;
+    }
+
     if(menu == 2){
         system("cls");
         return true;
     }
 
     //temp
-    if(menu == 1){
+    if(menu == 3){
         system("cls");
         cout<<"Blm ada apa apa njir\n";
         cout<<"tekan enter untuk lanjut\n";
@@ -225,7 +253,7 @@ int main(){
     //TEMP
     //player
     int lvl_lantai = 0;
-    hambali player;
+   
     player.stat_p.hp = 100;
     player.stat_p.physical_def = 10;
     player.stat_p.lvl = 1;
