@@ -3,9 +3,13 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
+#include <filesystem>
+
+//namespaces
 using namespace std;
+using namespace filesystem;
 
-
+//structs
 struct stats{
     int hp, physical_atk, magical_atk, physical_def, magical_def, lvl;
 };
@@ -78,16 +82,14 @@ int serang(stats stat, int tipe){
     return 0;
 }
 
-int* berlindung(stats stat){
+void berlindung(stats stat, int* def){
     //sudah ditambah dengan base stat
     //index 0 physical, index 1 magical
     srand(time(0));
     int m_def = (rand() % stat.magical_def) + stat.magical_def;
     int p_def = (rand() % stat.physical_def) + stat.physical_def;
-    int *arr = new int[2];
-    arr[0] = p_def;
-    arr[1] = m_def;
-    return arr;
+    def[0] = p_def;
+    def[1] = m_def;
 }
 
 void cek_stat(stats stat){
@@ -106,8 +108,8 @@ bool lantai(hambali player, monster musuh, int lantai){
     int dmg_player;
     int tipe_dmg_musuh;
     int tipe_dmg_player;
-    int *def_musuh;
-    int *def_player;
+    int def_musuh[2];
+    int def_player[2];
     int kerusakan_musuh;
     int kerusakan_player;
 
@@ -127,7 +129,7 @@ bool lantai(hambali player, monster musuh, int lantai){
         }
     }else if(aksi_musuh == 2){
         cout << "Musuh akan berlindung\n";
-        def_musuh = berlindung(musuh.stat_m);
+        berlindung(musuh.stat_m, def_musuh);
         cout << "Musuh berlindung sebesar " << def_musuh[0] <<" physical defense\n";
         cout << "Musuh berlindung sebesar " << def_musuh[1] <<" magical defense\n";
 
@@ -157,7 +159,7 @@ bool lantai(hambali player, monster musuh, int lantai){
             break;
         }
         case 2: {
-            def_player = berlindung(player.stat_p);
+            berlindung(player.stat_p, def_player);
             cout << "Anda berlindung sebesar " << def_player[0] <<" physical defense\n";
             cout << "Anda berlindung sebesar " << def_player[1] <<" magical defense\n";
             break;
@@ -174,7 +176,6 @@ bool lantai(hambali player, monster musuh, int lantai){
         }
     }
 
-    
     //damage player ke musuh
     if(tipe_dmg_player == 1){
         kerusakan_musuh = dmg_player - def_musuh[0];
@@ -208,19 +209,48 @@ bool lantai(hambali player, monster musuh, int lantai){
     return true;
 }
 
-void input_data_save_file(){
+path folder_save_file(){
+    //(path itu class dari filesystem)
+    //BUAT FOLDER(directory) UNTUK SAVE FILE (jika belum ada) & RETURN PATH UNTUK FOLDER(directory) SAVE FILE!!!!
+    path p_save_file = current_path();//path folder program
+    p_save_file.append("save_file");//path untuk folder baru
+    if(!is_directory(p_save_file)){
+        create_directory(p_save_file);//membuat folder baru dengan nama "save_file" jika belum ada
+    }
+    return p_save_file;
+}
+
+void buat_save_file_baru(){
+    path p_save_file = folder_save_file();//buat folder dan path ke foldernya
+
     //save file
     cin.ignore();
     string nama_player;
     string nama_file;
-    cout<<"Masukkan nama save file\n";
-    cout<<": ";
-    getline(cin,nama_file);
+    //nama save file
+    while(true){ //loop untuk mengecek apakah ada save file dgn nama yang sama atau tidak
+        path test_path = p_save_file;//path sementara untuk mengecek apakah ada file dgn nama yang sama atau tidak 
+        cout<<"Masukkan nama save file\n";
+        cout<<": ";
+        getline(cin,nama_file);
+        nama_file += ".txt";
+        test_path.append(nama_file);//path untuk save file baru
+        if(exists(test_path)){
+            cout<<"Save file dengan nama yang sama sudah ada\n";
+            cout<<"Tekan tombol apapun untuk lanjut\n";
+            getche();
+            system("cls");
+            continue;
+        }
+        p_save_file = test_path;
+        break;
+    }
+    //nama player
     cout<<"Masukkan nama player\n";
     cout<<": ";
     getline(cin, nama_player);
-    nama_file += ".txt";
-    ofstream save_file(nama_file);
+    //create save file
+    ofstream save_file(p_save_file);//membuat save file baru di folder "save_file" jk belum ada
     save_file<<nama_player<<'\n';
     save_file.close();
     cout<<"Save file berhasil dibuat\n";
@@ -229,25 +259,76 @@ void input_data_save_file(){
     system("cls");
 }
 
+bool muat_save_file(int idx, path* arr){
+    cout<<"Blm diimplementasi njir saya capek\n";
+    cout<<"Tekan tombol apapun untuk lanjut\n";
+    getche();
+    system("cls");
+    return true;
+}
+
+bool list_save_file(){
+    //return false berarti balik ke menu save file
+    //return true berarti save file berhasil di muat
+    int menu;
+    int counter = 1;
+    path p_folder = folder_save_file();
+    cout<<"--------------Pilih Save File Anda--------------\n";
+    cout<<"1. Kembali\n";
+    cout<<"------------------------------------------------\n";
+    if(std::filesystem::is_empty(p_folder)){//ambiguous njir jadinya pke std::filesystem::
+        cout<<"Belum ada save file\n";
+    }
+    for(auto const& save_file : directory_iterator(p_folder)){//namanya range based for loop klo penasaran
+        string nama_file = save_file.path().stem().string();
+        cout<<counter + 1<<". "<<nama_file<<'\n';
+        counter += 1;
+    }
+    path p_save_file[counter];
+    counter = 0;
+    for(auto const& save_file : directory_iterator(p_folder)){
+        p_save_file[counter] = save_file.path();
+    }
+    cout<<": ";
+    cin>>menu;
+    if(menu == 1){
+        system("cls");
+        return false;
+    }else{
+        system("cls");
+        //temp
+        if(muat_save_file(menu, p_save_file) == true){
+            return false;
+        };
+    }
+    return false;
+}
+
 int menu_save_file(){
     //return 1 berarti lanjut loop menu save file
     //return 2 berarti kembali ke main menu
     int menu;
     //save file
-    cout<<"--------------Pilih save file anda--------------\n";
+    cout<<"--------------Menu Save File--------------\n";
     cout<<"1. Buat save file baru\n";
-    cout<<"2. Kembali\n";
-    cout<<"3. List save file disini\n";
+    cout<<"2. List semua save file\n";
+    cout<<"3. Kembali\n";
     cout<<": ";
     cin>>menu;
 
     switch(menu){
         case 1:
             system("cls");
-            input_data_save_file();
+            buat_save_file_baru();
             return 1;
             break;
         case 2:
+            system("cls");
+            if(!list_save_file()){
+                return 1;
+            };
+            break;
+        case 3:
             return 2;
             break;
     }
