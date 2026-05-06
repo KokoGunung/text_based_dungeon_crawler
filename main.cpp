@@ -39,6 +39,7 @@ void input_data_save_file(){
     cin.ignore();
     cout << "Masukkan nama player\n";
     cout << "Nama: "; getline(cin, player.nama);
+    cin.ignore();
     nama_file += ".txt";
     fstream file(nama_file);
 
