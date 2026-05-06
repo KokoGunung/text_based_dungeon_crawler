@@ -208,7 +208,7 @@ bool lantai(hambali player, monster musuh, int lantai){
     return true;
 }
 
-bool input_data_save_file(){
+void input_data_save_file(){
     //save file
     cin.ignore();
     string nama_player;
@@ -227,10 +227,11 @@ bool input_data_save_file(){
     cout<<"Tekan tombol apapun untuk lanjut\n";
     getche();
     system("cls");
-    return true;
 }
 
 int menu_save_file(){
+    //return 1 berarti lanjut loop menu save file
+    //return 2 berarti kembali ke main menu
     int menu;
     //save file
     cout<<"--------------Pilih save file anda--------------\n";
@@ -240,23 +241,23 @@ int menu_save_file(){
     cout<<": ";
     cin>>menu;
 
-    if(menu == 1){
-        system("cls");
-        if(input_data_save_file()){
-            menu_save_file();
+    switch(menu){
+        case 1:
+            system("cls");
+            input_data_save_file();
             return 1;
-        }
-        return 2;
+            break;
+        case 2:
+            return 2;
+            break;
     }
-
-    if(menu == 2){
-        system("cls");
-        return 2;
-    }
-    return 2;
+    return 1;
 }
 
-bool main_menu(){
+int main_menu(){
+    //return 1 berarti lanjut loop main menu
+    //return 2 berarti keluar loop lanjut ke loop lantai
+    //return 3 berarti keluar loop keluar program
     //menu
     int menu;
     cout<<"=================DUNGEON CRAWLER================\n";
@@ -264,15 +265,20 @@ bool main_menu(){
     cout<<"2. Keluar\n";
     cout<<": ";
     cin>>menu;
-    if(menu == 2){
-        return false;
-    }
     system("cls");
-    
-    if(menu_save_file() == 2){
-        return true;
-    };
-    return true;
+    switch(menu){
+        case 1:
+            while(true){
+                if(menu_save_file() == 2){
+                    system("cls");
+                    return 1;
+                }
+            }
+            break;
+        case 2:
+            return 3;
+    }
+    return 1;
 }
 
 bool game(){
@@ -287,7 +293,10 @@ bool game(){
     musuh.stat_m.magical_def = 0;
     //loop main menu
     while(true){
-        if(!main_menu()){
+        int rv_main_menu = main_menu();
+        if(rv_main_menu == 2){
+            break;
+        }else if(rv_main_menu == 3){
             return false;
         }
     }
@@ -301,13 +310,6 @@ bool game(){
     return true;
 }
 
-
-
-
-//temp
-item pedang_besar_hitam;
-
-
 int main(){
     //TEMP
     //player
@@ -318,11 +320,6 @@ int main(){
     player.stat_p.magical_atk = 0;
     player.stat_p.magical_def = 0;
     player.exp = 0;
-    //item
-    pedang_besar_hitam.tipe = 3;
-
-
-
 
     //game loop
     while(game()){
