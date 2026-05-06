@@ -31,6 +31,37 @@ struct monster{
 
 hambali player;
 
+//armor & weapon untuk item
+item helm[5]={
+    {0,"helm copper", {0,0,0,5,0,1}},
+    {0,"helm silver", {0,0,0,10,0,2}},
+    {0,"helm gold", {0,0,0,15,0,3}},
+    {0,"helm platinum", {0,0,0,20,0,4}},
+    {0,"helm mythril", {0,0,0,25,0,5}}
+};
+
+item armor[5]={
+    {1,"armor copper", {0,0,0,10,0,1}},
+    {1,"armor silver", {0,0,0,20,0,2}},
+    {1,"armor gold", {0,0,0,30,0,3}},
+    {1,"armor platinum", {0,0,0,40,0,4}},
+    {1,"armor mythril", {0,0,0,50,0,5}}
+};
+
+item legging[5]={
+    {2,"legging copper", {0,0,0,5,0,1}},
+    {2,"legging silver", {0,0,0,10,0,2}},
+    {2,"legging gold", {0,0,0,15,0,3}},
+    {2,"legging platinum", {0,0,0,20,0,4}},
+    {2,"legging mythril", {0,0,0,25,0,5}}
+};
+
+item senjata[5]={
+    {3,"pedang copper", {0,10,0,0,0,1}},
+    {3,"pedang silver", {0,20,0,0,0,2}},
+};
+
+
 void input_data_save_file(){
 
     string nama_file;
@@ -46,6 +77,7 @@ void input_data_save_file(){
     
     file.close();
 }
+
 bool main_menu(){
     //menu
     int menu;
