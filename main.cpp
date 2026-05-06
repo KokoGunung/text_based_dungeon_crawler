@@ -99,6 +99,26 @@ void cek_stat(stats stat){
     cout<<"Magical defense : "<<stat.magical_def<<'\n';
 }
 
+bool try_drop_item(item &drop){
+    int chance = rand() % 100 + 1; // 10% chance
+    if(chance > 10){
+        return false;
+    }
+
+    int totalItems = 5 + 5 + 5 + 2;
+    int index = rand() % totalItems;
+    if(index < 5){
+        drop = helm[index];
+    } else if(index < 10){
+        drop = armor[index - 5];
+    } else if(index < 15){
+        drop = legging[index - 10];
+    } else {
+        drop = senjata[index - 15];
+    }
+    return true;
+}
+
 bool lantai(hambali player, monster musuh, int lantai){
     int aksi_player;
     int aksi_musuh;
@@ -200,6 +220,12 @@ bool lantai(hambali player, monster musuh, int lantai){
     }
     
     if(musuh.stat_m.hp <= 0){
+        item drop;
+        if(try_drop_item(drop)){
+            cout << "Musuh berhasil dikalahkan dan menjatuhkan item: " << drop.nama << "\n";
+        } else {
+            cout << "Musuh berhasil dikalahkan, tetapi tidak ada item yang dijatuhkan.\n";
+        }
         return false;
     }
     if(player.stat_p.hp <= 0){
