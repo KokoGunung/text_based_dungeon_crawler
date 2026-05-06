@@ -2,8 +2,8 @@
 #include <conio.h>//buat getche
 #include <cstdlib>
 #include <ctime>
-#include <fstream>
-#include <filesystem>
+#include <fstream>//untuk file handling
+#include <filesystem>//untuk folder(directory)
 
 //namespaces
 using namespace std;
