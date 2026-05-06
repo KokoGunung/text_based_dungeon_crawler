@@ -62,68 +62,7 @@ item senjata[5]={
 };
 
 
-void input_data_save_file(){
-
-    string nama_file;
-    cout << "Masukkan nama save file\n";
-    cout << "Nama File: "; getline(cin, nama_file);
-    cin.ignore();
-    cout << "Masukkan nama player\n";
-    cout << "Nama: "; getline(cin, player.nama);
-    cin.ignore();
-    nama_file += ".txt";
-    fstream file(nama_file);
-
-    file << player.nama << nama_file;
-    
-    file.close();
-}
-
-bool main_menu(){
-    //menu
-    int menu;
-    cout<<"=================DUNGEON CRAWLER================\n";
-    cout<<"1. Main\n";
-    cout<<"2. Keluar\n";
-    cout<<": ";
-    cin>>menu;
-    if(menu == 2){
-        return false;
-    }
-    system("cls");
-    
-    //save file
-    cout<<"--------------Pilih save file anda--------------\n";
-    cout<<"1. Buat save file baru\n";
-    cout<<"2. Kembali\n";
-    cout<<"3. List save file disini\n";
-    cout<<": ";
-    cin>>menu;
-
-    if(menu == 1){
-        system("cls");
-        input_data_save_file();
-        getche();
-        return true;
-    }
-
-    if(menu == 2){
-        system("cls");
-        return true;
-    }
-
-    //temp
-    if(menu == 3){
-        system("cls");
-        cout<<"Blm ada apa apa njir\n";
-        cout<<"tekan enter untuk lanjut\n";
-        getche();
-        system("cls");
-        return true;
-    }
-    return true;
-}
-
+//functions
 int serang(stats stat, int tipe){
     srand(time(0));
     int variasi = rand() % 11;
@@ -151,7 +90,6 @@ int* berlindung(stats stat){
     return arr;
 }
 
-
 void cek_stat(stats stat){
     cout<<"Level :" <<stat.lvl<<'\n';
     cout<<"Hp : " <<stat.hp<<'\n';
@@ -160,14 +98,6 @@ void cek_stat(stats stat){
     cout<<"Magical attack : "<<stat.magical_atk<<'\n';
     cout<<"Magical defense : "<<stat.magical_def<<'\n';
 }
-
-bool game(){
-    if(!main_menu()){
-        return false;
-    }
-    return true;
-}
-
 
 bool lantai(hambali player, monster musuh, int lantai){
     int aksi_player;
@@ -278,6 +208,102 @@ bool lantai(hambali player, monster musuh, int lantai){
     return true;
 }
 
+bool input_data_save_file(){
+    //save file
+    cin.ignore();
+    string nama_player;
+    string nama_file;
+    cout<<"Masukkan nama save file\n";
+    cout<<": ";
+    getline(cin,nama_file);
+    cout<<"Masukkan nama player\n";
+    cout<<": ";
+    getline(cin, nama_player);
+    nama_file += ".txt";
+    ofstream save_file(nama_file);
+    save_file<<nama_player<<'\n';
+    save_file.close();
+    cout<<"Save file berhasil dibuat\n";
+    cout<<"Tekan tombol apapun untuk lanjut\n";
+    getche();
+    system("cls");
+    return true;
+}
+
+int menu_save_file(){
+    int menu;
+    //save file
+    cout<<"--------------Pilih save file anda--------------\n";
+    cout<<"1. Buat save file baru\n";
+    cout<<"2. Kembali\n";
+    cout<<"3. List save file disini\n";
+    cout<<": ";
+    cin>>menu;
+
+    if(menu == 1){
+        system("cls");
+        if(input_data_save_file()){
+            menu_save_file();
+            return 1;
+        }
+        return 2;
+    }
+
+    if(menu == 2){
+        system("cls");
+        return 2;
+    }
+    return 2;
+}
+
+bool main_menu(){
+    //menu
+    int menu;
+    cout<<"=================DUNGEON CRAWLER================\n";
+    cout<<"1. Main\n";
+    cout<<"2. Keluar\n";
+    cout<<": ";
+    cin>>menu;
+    if(menu == 2){
+        return false;
+    }
+    system("cls");
+    
+    if(menu_save_file() == 2){
+        return true;
+    };
+    return true;
+}
+
+bool game(){
+    int lvl_lantai = 0;
+    monster musuh;
+    musuh.stat_m.lvl = lvl_lantai * 2;
+    int lvl_musuh = musuh.stat_m.lvl;
+    musuh.stat_m.hp = lvl_musuh * 10;
+    musuh.stat_m.physical_atk = lvl_musuh * 5;
+    musuh.stat_m.physical_def = lvl_musuh * 10;
+    musuh.stat_m.magical_atk = 0;
+    musuh.stat_m.magical_def = 0;
+    //loop main menu
+    while(true){
+        if(!main_menu()){
+            return false;
+        }
+    }
+    //loop lantai
+    while(true){
+        //kalau kalah atau menang
+        if(!lantai(player, musuh, lvl_lantai)){
+            return true;
+        }
+    }
+    return true;
+}
+
+
+
+
 //temp
 item pedang_besar_hitam;
 
@@ -285,8 +311,6 @@ item pedang_besar_hitam;
 int main(){
     //TEMP
     //player
-    int lvl_lantai = 0;
-   
     player.stat_p.hp = 100;
     player.stat_p.physical_def = 10;
     player.stat_p.lvl = 1;
@@ -302,16 +326,7 @@ int main(){
 
     //game loop
     while(game()){
-        monster musuh;
-        musuh.stat_m.lvl = lvl_lantai * 2;
-        int lvl_musuh = musuh.stat_m.lvl;
-        musuh.stat_m.hp = lvl_musuh * 10;
-        musuh.stat_m.physical_atk = lvl_musuh * 5;
-        musuh.stat_m.physical_def = lvl_musuh * 10;
-        musuh.stat_m.magical_atk = 0;
-        musuh.stat_m.magical_def = 0;
-        while(lantai(player, musuh, lvl_lantai)){
-
-        }
+        
+        
     }
 }
