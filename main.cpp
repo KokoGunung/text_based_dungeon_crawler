@@ -323,8 +323,8 @@ bool list_save_file(){
     }else{
         system("cls");
         //temp
-        if(muat_save_file(menu, p_save_file) == true){
-            return false;
+        if(muat_save_file(menu, p_save_file)){
+            return false;//temp
         };
     }
     return false;
@@ -332,7 +332,8 @@ bool list_save_file(){
 
 int menu_save_file(){
     //return 1 berarti lanjut loop menu save file
-    //return 2 berarti kembali ke main menu
+    //return 2 berarti lanjut ke loop lantai(save file berhasil dimuat)
+    //return 3 berarti kembali ke main menu
     int menu;
     //save file
     cout<<"--------------Menu Save File--------------\n";
@@ -352,10 +353,13 @@ int menu_save_file(){
             system("cls");
             if(!list_save_file()){
                 return 1;
+            }else{
+                return 2;
             };
             break;
         case 3:
-            return 2;
+            system("cls");
+            return 3;
             break;
     }
     return 1;
@@ -376,14 +380,19 @@ int main_menu(){
     switch(menu){
         case 1:
             while(true){
-                if(menu_save_file() == 2){
-                    system("cls");
+                int rv_menu_sf = menu_save_file();
+                if(rv_menu_sf == 1){
+                    continue;
+                }else if(rv_menu_sf == 2){
+                    return 2;
+                }else if(rv_menu_sf == 3){
                     return 1;
                 }
             }
             break;
         case 2:
             return 3;
+            break;
     }
     return 1;
 }
@@ -401,7 +410,9 @@ bool game(){
     //loop main menu
     while(true){
         int rv_main_menu = main_menu();
-        if(rv_main_menu == 2){
+        if(rv_main_menu == 1){
+            continue;
+        }else if(rv_main_menu == 2){
             break;
         }else if(rv_main_menu == 3){
             return false;
