@@ -357,7 +357,8 @@ void save(path sf_path){
     ofstream save_file(sf_path);
 }
 
-void inisialisasi_player(path sf_path){
+void muat_sf(path sf_path){
+    //inisialisasi player
     int e_idx;
     ifstream save_file(sf_path);
     save_file>>player.nama;
@@ -392,15 +393,56 @@ void inisialisasi_player(path sf_path){
     save_file>>player.exp;
     player.save_file = sf_path;
     save_file.close();
+    cout<<"Save file berhasil dimuat\n";
+    cout<<"Tekan tombol apapun untuk lanjut\n";
+    getche();
+    system("cls");
 }
 
-bool muat_hapus_sf(path sf_path){
-    
+int aksi_sf(path sf_path){
+    //return 1 berarti lanjut ke loop lantai(sf berhasil dimuat)
+    //return 2 berarti balik ke loop list sf
+    //return 3 berarti lanjut loop aksi sf
+    int menu;
+    char hapus;
+    cout<<"--------------------------Pilih aksi anda--------------------------\n";
+    cout<<"1. Muat save file\n";
+    cout<<"2. Hapus save file\n";
+    cout<<": ";
+    cin>>menu;
+    switch(menu)
+    {
+        case 1:
+            muat_sf(sf_path);
+            return 1;
+            break;
+        case 2:
+            cout<<"-------------------------------------------------------------------\n";
+            cout<<"Apakah anda yakin ingin menghapus save file ini? (y/n) : ";
+            cin>>hapus;
+            switch(hapus){
+                case 'y':
+                    remove(sf_path);
+                    cout<<"Save file berhasil dihapus\n";
+                    cout<<"Tekan tombol apapun untuk lanjut\n";
+                    getche();
+                    system("cls");
+                    return 2;
+                    break;
+                case 'n':
+                    system("cls");
+                    return 3;
+                    break;
+            }
+            break;
+    }
+    return 2;
 }
 
-bool list_save_file(){
-    //return false berarti balik ke menu save file
-    //return true berarti save file berhasil di muat
+int list_save_file(){
+    //return 1 berarti save file berhasil di muat
+    //return 2 berarti balik ke menu save file
+    //return 3 berarti lanjut loop list save file
     int menu;
     int counter = 1;
     path p_folder = folder_save_file();
@@ -425,23 +467,27 @@ bool list_save_file(){
     cin>>menu;
     if(menu == 1){
         system("cls");
-        return false;
+        return 2;
     }else{
-        cout<<"------------------------------------------------\n";
-        inisialisasi_player(p_save_file[menu-2]);
-        cout<<"Save file berhasil dimuat\n";
-        cout<<"Tekan tombol apapun untuk lanjut\n";
-        getche();
         system("cls");
-        return true;
+        while(true){
+            int rv_aksi_sf = aksi_sf(p_save_file[menu - 2]);
+            if(rv_aksi_sf == 1){
+                return 1;
+            }else if(rv_aksi_sf == 2){
+                return 3;
+            }else if(rv_aksi_sf == 3){
+                continue;
+            }
+        }
     }
-    return false;
+    return 3;
 }
 
 int menu_save_file(){
-    //return 1 berarti lanjut loop menu save file
-    //return 2 berarti lanjut ke loop lantai(save file berhasil dimuat)
-    //return 3 berarti kembali ke main menu
+    //return 1 berarti lanjut ke loop lantai(save file berhasil dimuat)
+    //return 2 berarti kembali ke main menu
+    //return 3 berarti lanjut loop menu save file
     int menu;
     //save file
     cout<<"--------------Menu Save File--------------\n";
@@ -455,28 +501,34 @@ int menu_save_file(){
         case 1:
             system("cls");
             buat_save_file_baru();
-            return 1;
+            return 3;
             break;
         case 2:
             system("cls");
-            if(!list_save_file()){
-                return 1;
-            }else{
-                return 2;
-            };
+            while(true)
+            {
+                int rv_list_sf = list_save_file();
+                if(rv_list_sf == 1){
+                    return 1;
+                }else if(rv_list_sf == 2){
+                    return 3;
+                }else if(rv_list_sf == 3){
+                    continue;
+                }
+            }
             break;
         case 3:
             system("cls");
-            return 3;
+            return 2;
             break;
     }
-    return 1;
+    return 3;
 }
 
 int main_menu(){
-    //return 1 berarti lanjut loop main menu
-    //return 2 berarti keluar loop lanjut ke loop lantai
-    //return 3 berarti keluar loop keluar program
+    //return 1 berarti keluar loop lanjut ke loop lantai
+    //return 2 berarti keluar loop keluar program
+    //return 3 berarti lanjut loop main menu
     //menu
     int menu;
     cout<<"=================DUNGEON CRAWLER================\n";
@@ -490,19 +542,19 @@ int main_menu(){
             while(true){
                 int rv_menu_sf = menu_save_file();
                 if(rv_menu_sf == 1){
-                    continue;
-                }else if(rv_menu_sf == 2){
-                    return 2;
-                }else if(rv_menu_sf == 3){
                     return 1;
+                }else if(rv_menu_sf == 2){
+                    return 3;
+                }else if(rv_menu_sf == 3){
+                    continue;
                 }
             }
             break;
         case 2:
-            return 3;
+            return 2;
             break;
     }
-    return 1;
+    return 3;
 }
 
 bool game(){
@@ -519,11 +571,11 @@ bool game(){
     while(true){
         int rv_main_menu = main_menu();
         if(rv_main_menu == 1){
-            continue;
-        }else if(rv_main_menu == 2){
             break;
-        }else if(rv_main_menu == 3){
+        }else if(rv_main_menu == 2){
             return false;
+        }else if(rv_main_menu == 3){
+            continue;
         }
     }
     //loop lantai
