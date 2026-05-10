@@ -21,12 +21,20 @@ struct item{
     stats stat_i;
 };
 
+//equipment slot
+struct e_slot
+{
+    bool kosong;
+    item equipment;
+};
+
 struct hambali{
     stats stat_p;
-    // index 0 sampai 2 untuk armor (helm , baju , legging) , index 3 untuk senjata
-    item equipment[4];
+    //idx 0,1,2 berarti helm, armor, legging  3 berarti senjata
+    e_slot slot[4];
     int exp;
     string nama;
+    path save_file;//untuk save file
 };
 
 struct monster{
@@ -154,7 +162,7 @@ bool lantai(hambali player, monster musuh, int lantai){
         cout << "Musuh berlindung sebesar " << def_musuh[1] <<" magical defense\n";
 
     }
-    cout<<"=======Pilih aksi anda=======";
+    cout<<"=======Pilih aksi anda=======\n";
     cout<<"1. Menyerang\n";
     cout<<"2. Berlindung\n";
     cout<<"3. Cek stat musuh\n";
@@ -235,6 +243,7 @@ bool lantai(hambali player, monster musuh, int lantai){
     return true;
 }
 
+
 path folder_save_file(){
     //(path itu class dari filesystem)
     //BUAT FOLDER(directory) UNTUK SAVE FILE (jika belum ada) & RETURN PATH UNTUK FOLDER(directory) SAVE FILE!!!!
@@ -246,15 +255,17 @@ path folder_save_file(){
     return p_save_file;
 }
 
+
+
 void buat_save_file_baru(){
     path p_save_file = folder_save_file();//buat folder dan path ke foldernya
-
     //save file
     cin.ignore();
     string nama_player;
     string nama_file;
     //nama save file
     while(true){ //loop untuk mengecek apakah ada save file dgn nama yang sama atau tidak
+        cout<<"===========BUAT SAVE FILE BARU===========\n";
         path test_path = p_save_file;//path sementara untuk mengecek apakah ada file dgn nama yang sama atau tidak 
         cout<<"Masukkan nama save file\n";
         cout<<": ";
@@ -277,7 +288,55 @@ void buat_save_file_baru(){
     getline(cin, nama_player);
     //create save file
     ofstream save_file(p_save_file);//membuat save file baru di folder "save_file" jk belum ada
-    save_file<<nama_player<<'\n';
+    save_file<<nama_player;
+
+    //alokasi poin stat
+    int hp = 10, physical_atk = 10, magical_atk = 10, p_def = 10, m_def = 10, poin = 10, menu;
+    while(poin > 0){
+        system("cls");
+        cout<<"===========BUAT SAVE FILE BARU===========\n";
+        cout<<"Alokasikan poin stat anda\n";
+        cout<<"-------------------------------------\n";
+        cout<<"Anda memiliki "<<poin<<" poin stat\n";
+        cout<<"1. Hp : "<<hp<<'\n';
+        cout<<"2. Physical attack : "<<physical_atk<<'\n';
+        cout<<"3. Magical attack : "<<magical_atk<<'\n';
+        cout<<"4. Physical defense : "<<p_def<<'\n';
+        cout<<"5. Magical defense : "<<m_def<<'\n';
+        cout<<": ";
+        cin>>menu;
+        switch(menu){
+            case 1:
+                hp += 1;
+                break;
+            case 2:
+                physical_atk += 1;
+                break;
+            case 3:
+                magical_atk += 1;
+                break;
+            case 4:
+                p_def += 1;
+                break;
+            case 5:
+                m_def += 1;
+                break;
+        }
+        poin -= 1;
+    }
+    save_file<<'\n'<<hp<<' '<<physical_atk<<' '<<magical_atk<<' '<<p_def<<' '<<m_def<<' '<<1;
+    save_file<<'\n'<<-1<<' '<<-1<<' '<<-1<<' '<<-1;
+    save_file<<'\n'<<0;
+    system("cls");
+    cout<<"===========BUAT SAVE FILE BARU===========\n";
+    cout<<"Nama : "<<nama_player<<'\n';
+    cout<<"-------------------------------------\n";
+    cout<<"Hp : "<<hp<<'\n';
+    cout<<"Physical attack : "<<physical_atk<<'\n';
+    cout<<"Magical attack : "<<magical_atk<<'\n';
+    cout<<"Physical defense : "<<p_def<<'\n';
+    cout<<"Magical defense : "<<m_def<<'\n';
+    cout<<"-------------------------------------\n";
     save_file.close();
     cout<<"Save file berhasil dibuat\n";
     cout<<"Tekan tombol apapun untuk lanjut\n";
@@ -285,15 +344,57 @@ void buat_save_file_baru(){
     system("cls");
 }
 
-bool muat_save_file(int idx, path* arr){
-    cout<<"Blm diimplementasi njir saya capek\n";
-    cout<<"Tekan tombol apapun untuk lanjut\n";
-    getche();
-    system("cls");
-    return true;
+
+/*
+    struktur save file
+    1. nama player -> string
+    2. hp physical_atk magical_atk physical_def magical_def lvl -> integer
+    3. helm baju legging senjata -> integer(-1 kalo g ada equipment)
+    4. exp -> integer
+*/
+
+void save(path sf_path){
+    ofstream save_file(sf_path);
 }
 
-bool list_save_file(){
+void inisialisasi_player(path sf_path){
+    int e_idx;
+    ifstream save_file(sf_path);
+    save_file>>player.nama;
+    save_file>>player.stat_p.hp;
+    save_file>>player.stat_p.physical_atk;
+    save_file>>player.stat_p.magical_atk;
+    save_file>>player.stat_p.physical_def;
+    save_file>>player.stat_p.magical_def;
+    save_file>>player.stat_p.lvl;
+    for(int i = 0; i < 4; i++){
+        save_file>>e_idx;
+        if(e_idx < 0){
+            player.slot[i].kosong = true;
+        }else{
+            player.slot[i].kosong = false;
+            switch(i){
+                case 0:
+                    player.slot[i].equipment = helm[e_idx];
+                    break;
+                case 1:
+                    player.slot[i].equipment = armor[e_idx];
+                    break;
+                case 2:
+                    player.slot[i].equipment = legging[e_idx];
+                    break;
+                case 3:
+                    player.slot[i].equipment = senjata[e_idx];
+                    break;
+            }
+        }
+    }
+    save_file>>player.exp;
+    player.save_file = sf_path;
+    save_file.close();
+}
+
+bool muat_save_file(){
     //return false berarti balik ke menu save file
     //return true berarti save file berhasil di muat
     int menu;
@@ -310,10 +411,11 @@ bool list_save_file(){
         cout<<counter + 1<<". "<<nama_file<<'\n';
         counter += 1;
     }
-    path p_save_file[counter];
+    path p_save_file[counter - 1];
     counter = 0;
     for(auto const& save_file : directory_iterator(p_folder)){
         p_save_file[counter] = save_file.path();
+        counter += 1;
     }
     cout<<": ";
     cin>>menu;
@@ -321,23 +423,26 @@ bool list_save_file(){
         system("cls");
         return false;
     }else{
+        cout<<"------------------------------------------------\n";
+        inisialisasi_player(p_save_file[menu-2]);
+        cout<<"Save file berhasil dimuat\n";
+        cout<<"Tekan tombol apapun untuk lanjut\n";
+        getche();
         system("cls");
-        //temp
-        if(muat_save_file(menu, p_save_file) == true){
-            return false;
-        };
+        return true;
     }
     return false;
 }
 
 int menu_save_file(){
     //return 1 berarti lanjut loop menu save file
-    //return 2 berarti kembali ke main menu
+    //return 2 berarti lanjut ke loop lantai(save file berhasil dimuat)
+    //return 3 berarti kembali ke main menu
     int menu;
     //save file
     cout<<"--------------Menu Save File--------------\n";
     cout<<"1. Buat save file baru\n";
-    cout<<"2. List semua save file\n";
+    cout<<"2. Muat save file\n";
     cout<<"3. Kembali\n";
     cout<<": ";
     cin>>menu;
@@ -350,12 +455,15 @@ int menu_save_file(){
             break;
         case 2:
             system("cls");
-            if(!list_save_file()){
+            if(!muat_save_file()){
                 return 1;
+            }else{
+                return 2;
             };
             break;
         case 3:
-            return 2;
+            system("cls");
+            return 3;
             break;
     }
     return 1;
@@ -376,14 +484,19 @@ int main_menu(){
     switch(menu){
         case 1:
             while(true){
-                if(menu_save_file() == 2){
-                    system("cls");
+                int rv_menu_sf = menu_save_file();
+                if(rv_menu_sf == 1){
+                    continue;
+                }else if(rv_menu_sf == 2){
+                    return 2;
+                }else if(rv_menu_sf == 3){
                     return 1;
                 }
             }
             break;
         case 2:
             return 3;
+            break;
     }
     return 1;
 }
@@ -401,7 +514,9 @@ bool game(){
     //loop main menu
     while(true){
         int rv_main_menu = main_menu();
-        if(rv_main_menu == 2){
+        if(rv_main_menu == 1){
+            continue;
+        }else if(rv_main_menu == 2){
             break;
         }else if(rv_main_menu == 3){
             return false;
@@ -418,16 +533,6 @@ bool game(){
 }
 
 int main(){
-    //TEMP
-    //player
-    player.stat_p.hp = 100;
-    player.stat_p.physical_def = 10;
-    player.stat_p.lvl = 1;
-    player.stat_p.physical_atk = 100;
-    player.stat_p.magical_atk = 0;
-    player.stat_p.magical_def = 0;
-    player.exp = 0;
-
     //game loop
     while(game()){
         
