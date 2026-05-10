@@ -394,7 +394,11 @@ void inisialisasi_player(path sf_path){
     save_file.close();
 }
 
-bool muat_save_file(){
+bool muat_hapus_sf(path sf_path){
+    
+}
+
+bool list_save_file(){
     //return false berarti balik ke menu save file
     //return true berarti save file berhasil di muat
     int menu;
@@ -442,7 +446,7 @@ int menu_save_file(){
     //save file
     cout<<"--------------Menu Save File--------------\n";
     cout<<"1. Buat save file baru\n";
-    cout<<"2. Muat save file\n";
+    cout<<"2. List save file\n";
     cout<<"3. Kembali\n";
     cout<<": ";
     cin>>menu;
@@ -455,7 +459,7 @@ int menu_save_file(){
             break;
         case 2:
             system("cls");
-            if(!muat_save_file()){
+            if(!list_save_file()){
                 return 1;
             }else{
                 return 2;
