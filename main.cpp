@@ -142,7 +142,7 @@ void Isi_Inventory(hambali player){
     
 }
 
-bool buangitem(hambali player, int n){
+bool buangitem(hambali &player, int n){
     if(n < 0 || n >= player.jumlahitem){
         cout << "Tidak ada item pada no tersebut\n";
         return false;
@@ -154,7 +154,7 @@ bool buangitem(hambali player, int n){
     return true;
 }
 
-bool tambahitem(hambali player, item baru){
+bool tambahitem(hambali &player, item baru){
     if (player.jumlahitem >= 50){
         cout << "Inventory Penuh\n";
         return false;
@@ -192,7 +192,7 @@ void menu_ambil_buang(item barang){
     }
 }
 
-void menu_Inventory (hambali player){
+void menu_Inventory (hambali &player){
     int pilih;
     int no;
     while(pilih != 3){
