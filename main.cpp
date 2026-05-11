@@ -35,6 +35,8 @@ struct hambali{
     int exp;
     string nama;
     path save_file;//untuk save file
+    item inventory[50];
+    int jumlahitem = 0;//Jumlah item sekarang
 };
 
 struct monster{
@@ -129,6 +131,94 @@ bool try_drop_item(item &drop){
     return true;
 }
 
+void Isi_Inventory(hambali player){
+    if(player.jumlahitem == 0){
+        cout << "Inventory 0\n";
+        return;
+    }
+    for (int i = 0; i < player.jumlahitem; i++){
+        cout << i+1 << "." << player.inventory[i].nama << " (Lvl "<< player.inventory[i].stat_i.lvl << ")\n";
+    }
+    
+}
+
+bool buangitem(hambali &player, int n){
+    if(n < 0 || n >= player.jumlahitem){
+        cout << "Tidak ada item pada no tersebut\n";
+        return false;
+    }
+    for(int i = n; i < player.jumlahitem - 1; i++){
+        player.inventory[i] = player.inventory[i+1];
+    }
+    player.jumlahitem--;
+    return true;
+}
+
+bool tambahitem(hambali &player, item baru){
+    if (player.jumlahitem >= 50){
+        cout << "Inventory Penuh\n";
+        return false;
+    }
+    player.inventory[player.jumlahitem] = baru;
+    player.jumlahitem++;
+    cout << baru.nama << "Telah di tambahkan\n";
+    return true;
+}
+
+void menu_ambil_buang(item barang){
+    int pilih;
+    cout << "Anda mendapatkan item" << barang.nama <<"\n";
+    cout << "Stat Item :\n";
+    cout << "Hp : " << barang.stat_i.hp << "\n";
+    cout << "Physical Attack : " << barang.stat_i.physical_atk << "\n";
+    cout << "Magical Attack : " << barang.stat_i.magical_atk << "\n";
+    cout << "Physical Defense : " << barang.stat_i.physical_def << "\n";
+    cout << "Magical Defense : " << barang.stat_i.magical_def << "\n";
+    cout << "Level : " << barang.stat_i.lvl << "\n";
+    cout << "Pilih aksi anda\n";
+    cout << "1. Simpan Item\n";
+    cout << "2. Buang Item\n";
+    cout << "Pilihan Anda : "; cin >> pilih;
+    switch (pilih){
+        case 1 :
+        tambahitem(player, barang);
+        break;
+        case 2 :
+        cout << "Item Telah Dibuang\n";
+        break;
+    default:
+        cout << "Pilihan Tidak Valid\n";
+        break;
+    }
+}
+
+void menu_Inventory (hambali &player){
+    int pilih;
+    int no;
+    while(pilih != 3){
+        cout << "Menu - Inventory\n";
+        cout << "1. Lihat Inventory\n";
+        cout << "2. Buang Item\n";
+        cout << "3. Kembali\n";
+        cout << ":";cin >> pilih;
+        switch (pilih){
+            case 1:
+                Isi_Inventory(player);
+                break;
+            case 2:
+                Isi_Inventory(player);
+                cout << "Pilih item yang mau dibuang:";cin >> no;
+                buangitem(player, no - 1);
+                break;
+            case 3:
+                break;
+        default:
+            break;
+        }
+
+    }
+}
+
 bool lantai(hambali player, monster musuh, int lantai){
     int aksi_player;
     int aksi_musuh;
@@ -167,6 +257,7 @@ bool lantai(hambali player, monster musuh, int lantai){
     cout<<"2. Berlindung\n";
     cout<<"3. Cek stat musuh\n";
     cout<<"4. Cek stat anda\n";
+    cout<<"5. Buka Inventory\n";
     cout<<": ";
     cin>>aksi_player;
     switch(aksi_player){
@@ -202,6 +293,10 @@ bool lantai(hambali player, monster musuh, int lantai){
             cek_stat(player.stat_p);
             break;
         }
+        case 5:{
+            menu_Inventory(player);
+            break;
+        }
     }
 
     //damage player ke musuh
@@ -232,6 +327,7 @@ bool lantai(hambali player, monster musuh, int lantai){
         item drop;
         if(try_drop_item(drop)){
             cout << "Musuh berhasil dikalahkan dan menjatuhkan item: " << drop.nama << "\n";
+            menu_ambil_buang(drop);
         } else {
             cout << "Musuh berhasil dikalahkan, tetapi tidak ada item yang dijatuhkan.\n";
         }
