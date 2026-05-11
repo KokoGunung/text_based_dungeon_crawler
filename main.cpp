@@ -255,8 +255,6 @@ path folder_save_file(){
     return p_save_file;
 }
 
-
-
 void buat_save_file_baru(){
     path p_save_file = folder_save_file();//buat folder dan path ke foldernya
     //save file
@@ -324,10 +322,14 @@ void buat_save_file_baru(){
         }
         poin -= 1;
     }
+
+    //isi save file
     save_file<<'\n'<<hp<<' '<<physical_atk<<' '<<magical_atk<<' '<<p_def<<' '<<m_def<<' '<<1;
     save_file<<'\n'<<-1<<' '<<-1<<' '<<-1<<' '<<-1;
     save_file<<'\n'<<0;
     system("cls");
+
+    //overview
     cout<<"===========BUAT SAVE FILE BARU===========\n";
     cout<<"Nama : "<<nama_player<<'\n';
     cout<<"-------------------------------------\n";
