@@ -277,15 +277,60 @@ void menu_sort(){
     cout << "Inventory telah diurutkan\n";
 }
 
+// pengubah huruf kecil
+string huruf_kecil(string kata){
+    for(int i = 0; i < kata.length(); i++){
+        kata[i] = tolower(kata[i]);
+    }
+    return kata;
+}
+
+void search_nama(string target, hambali &p){
+    bool ketemu = false;
+    string target_low = huruf_kecil(target);
+
+    cout << "Hasil pencarian untuk \"" << target << "\":\n";
+    for(int i = 0; i < p.jumlahitem; i++){
+        string nama_item = huruf_kecil(p.inventory[i].nama);
+        if(nama_item.find(target_low) != string::npos){
+            cout << "Slot " << i+1 << "." << p.inventory[i].nama << " (Lvl "<< p.inventory[i].stat_i.lvl << ")\n";
+        ketemu = true; }
+    }
+    if(!ketemu) cout << "Item tidak ditemukan.\n";
+    cout << endl;
+    cout << "-------------------------------------------------\n";
+    
+}
+
+void search_level(int target_lvl, hambali &p){
+    bool ketemu = false;
+    cout << "Hasil pencarian untuk level: \"" << target_lvl << "\":\n";
+    for(int i = 0; i < p.jumlahitem; i++){
+        if(p.inventory[i].stat_i.lvl == target_lvl){
+            cout << "Slot " << i+1 << ". " << p.inventory[i].nama << " (Lvl "<< p.inventory[i].stat_i.lvl << ")\n";
+            ketemu = true;
+        }
+    }
+    if(!ketemu) cout << "Item tidak ditemukan.\n";
+    cout << endl;
+    cout << "-------------------------------------------------\n";
+    
+}
+
 void menu_Inventory (){
     int pilih;
     int no;
+    int target_lvl;
+    string nama_cari;
+
     while(pilih != 3){
         cout << "Menu - Inventory\n";
         cout << "1. Lihat Inventory\n";
         cout << "2. Buang Item\n";
         cout << "3. Sorting Inventory\n";
-        cout << "4. Kembali\n";
+        cout << "4. Searching Inventory (By Name)\n";
+        cout << "5. Searching Inventory (By Level)\n";
+        cout << "6. Kembali\n";
         cout << ":";cin >> pilih;
         switch (pilih){
             case 1:
@@ -300,6 +345,17 @@ void menu_Inventory (){
                 menu_sort();
                 break;
             case 4:
+                cout << "Masukkan nama item yang ingin dicari: "; 
+                cin.ignore();
+                getline(cin, nama_cari);
+                search_nama(nama_cari, player);
+                break;
+            case 5:
+                cout << "Masukkan level item yang ingin dicari: ";
+                cin >> target_lvl;
+                search_level(target_lvl, player);
+                break;
+            case 6:
                 system("cls");
                 break;
         default:
