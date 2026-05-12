@@ -213,6 +213,70 @@ void menu_ambil_buang(item barang){
     }
 }
 
+void swapitem(item &a, item &b){
+    item temp = a;
+    a = b;
+    b = a;
+}
+
+int partition(item arr[], int low, int high, int mode, int urut){
+    item pivot = arr[high];
+    int i = low -1;
+
+    for(int j = low; j < high; j++){
+        bool kondisi = false;
+        if(mode == 1){
+            if(urut)
+                kondisi = arr[j].nama < pivot.nama;
+            else
+                kondisi = arr[j].nama > pivot.nama;
+        }
+        else if(mode == 2){
+            if(urut)
+                kondisi = arr[j].stat_i.lvl < pivot.stat_i.lvl;
+            else
+                kondisi = arr[j].stat_i.lvl > pivot.stat_i.lvl;
+        }
+        if(kondisi){
+            i++;
+            swapitem(arr[i], arr[j]);
+        }
+        swapitem(arr[i+1], arr[high]);
+        return(i+1);
+    }
+}
+
+void quick_sort(item arr[], int low, int high, int mode, int urut){
+    if(low < high){
+        int pi = partition(arr, low, high, mode, urut);
+
+        quick_sort(arr, low, pi-1, mode, urut);
+        quick_sort(arr, pi+1, high, mode, urut);
+    }
+}
+
+void menu_sort(){
+    if(player.jumlahitem <= 0){
+        cout << "Inventory Kosong\n";
+        return;
+    }
+    int tipe;
+    int urutan;
+    cout << 'Sorting Inventory\n';
+    cout << "1. Berdasarkan nama\n";
+    cout << "2. Berdasarkan level\n";
+    cout << ": ";cin >> tipe;
+
+    cout << "1. Terbesar ke Terkecil\n";
+    cout << "2. Terkecil ke Terbesar\n";
+    cout << ": ";cin >> urutan;
+
+    bool urut = (urutan == 1);
+
+    quick_sort(player.inventory, 0, player.jumlahitem - 1 , tipe, urut);
+    cout << "Inventory telah diurutkan\n";
+}
+
 void menu_Inventory (){
     int pilih;
     int no;
@@ -220,7 +284,8 @@ void menu_Inventory (){
         cout << "Menu - Inventory\n";
         cout << "1. Lihat Inventory\n";
         cout << "2. Buang Item\n";
-        cout << "3. Kembali\n";
+        cout << "3. Sorting Inventory\n";
+        cout << "4. Kembali\n";
         cout << ":";cin >> pilih;
         switch (pilih){
             case 1:
@@ -232,6 +297,9 @@ void menu_Inventory (){
                 buangitem(no - 1);
                 break;
             case 3:
+                menu_sort();
+                break;
+            case 4:
                 system("cls");
                 break;
         default:
