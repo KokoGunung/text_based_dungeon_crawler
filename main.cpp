@@ -75,7 +75,7 @@ item legging[5]={
     {2,"legging mythril", {0,0,0,25,0,5}}
 };
 
-item senjata[5]={
+item senjata[2]={
     {3,"pedang copper", {0,10,0,0,0,1}},
     {3,"pedang silver", {0,20,0,0,0,2}},
 };
@@ -123,7 +123,7 @@ int berlindung(stats stat, int tipe){
 }
 
 void cek_stat(stats stat){
-    cout<<"Level :" <<stat.lvl<<'\n';
+    cout<<"Level : " <<stat.lvl<<'\n';
     cout<<"Hp : " <<stat.hp<<'\n';
     cout<<"Physical attack : "<<stat.physical_atk<<'\n';
     cout<<"Physical defense : "<<stat.physical_def<<'\n';
@@ -171,7 +171,7 @@ bool tambah_item(item baru){
 
 void menu_ambil_buang(item barang){
     int pilih;
-    cout<<"Anda mendapatkan item! " << barang.nama <<"\n";
+    cout<<"Anda mendapatkan item " << barang.nama <<"!\n";
     cout<<"-------------------------------------------------\n";
     cout<<"Stat Item :\n";
     cout<<"Hp : " << barang.stat_i.hp << "\n";
@@ -310,7 +310,6 @@ void menu_Inventory(){
     int no;
     int target_lvl;
     string nama_cari;
-
     while(pilih != 3){
         cout<<"Menu - Inventory\n";
         cout<<"1. Lihat Inventory\n";
@@ -360,7 +359,7 @@ item jatuh_barang(){
     int jml_senjata = sizeof(senjata)/sizeof(senjata[0]);
     int rarity;
     srand(time(0));
-    int piece = rand() % 4;//0 helm, 1 armor, 2 legging, 4 senjata
+    int piece = rand() % 4;//0 helm, 1 armor, 2 legging, 3 senjata
     item barang;
     srand(time(0));
     switch(piece){
@@ -744,9 +743,10 @@ int aksi_sf(path sf_path){
     //return 3 berarti lanjut loop aksi sf
     int menu;
     char hapus;
-    cout<<"--------------------------Pilih aksi anda--------------------------\n";
+    cout<<"-------------------Pilih aksi anda-------------------\n";
     cout<<"1. Muat save file\n";
     cout<<"2. Hapus save file\n";
+    cout<<"3. Kembali\n";
     cout<<": ";
     cin>>menu;
     switch(menu)
@@ -756,8 +756,8 @@ int aksi_sf(path sf_path){
             return 1;
             break;
         case 2:
-            cout<<"-------------------------------------------------------------------\n";
-            cout<<"Apakah anda yakin ingin menghapus save file ini? (y/n) : ";
+            cout<<"-----------------------------------------------------\n";
+            cout<<"Apakah anda yakin ingin menghapus\nsave file ini? (y/n) : ";
             cin>>hapus;
             switch(hapus){
                 case 'y':
@@ -773,6 +773,10 @@ int aksi_sf(path sf_path){
                     return 3;
                     break;
             }
+            break;
+        case 3:
+            system("cls");
+            return 2;
             break;
     }
     return 2;
@@ -962,8 +966,7 @@ int main(){
                 cout<<"=================================================\n";
                 cout<<"Anda Menang!\n";
                 cout<<"-------------------------------------------------\n";
-                //(10+lvl_lantai) >= (rand()%(100 + (lvl_lantai * 2)))
-                if(true){//rumusnya probabilitasnya adalah (10 + lvl_lantai)/(10 + lvl_lantai * 2)
+                if((10+lvl_lantai) >= (rand()%(100 + (lvl_lantai * 2)))){//rumusnya probabilitasnya adalah (10 + lvl_lantai)/(10 + lvl_lantai * 2)
                     cout<<"Musuh menjatuhkan barang!\n";
                     barang = jatuh_barang();//sukses dpt barang
                     menu_ambil_buang(barang);
