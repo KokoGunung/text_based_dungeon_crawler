@@ -25,7 +25,7 @@ struct item{
 //equipment slot
 struct e_slot
 {
-    int idx;
+    bool kosong;
     item equipment;
 };
 
@@ -49,6 +49,8 @@ struct monster{
 };
 
 hambali player;
+//temp
+
 
 //armor & weapon untuk item
 item helm[5]={
@@ -123,6 +125,7 @@ int berlindung(stats stat, int tipe){
 }
 
 void cek_stat(stats stat){
+    cout<<"-------------------------------------------------\n";
     cout<<"Level : " <<stat.lvl<<'\n';
     cout<<"Hp : " <<stat.hp<<'\n';
     cout<<"Physical attack : "<<stat.physical_atk<<'\n';
@@ -134,31 +137,14 @@ void cek_stat(stats stat){
     system("cls");
 }
 
-void isi_inventory(){
-    if(player.jumlahitem == 0){
-        cout<<"Inventory 0\n";
-        return;
-    }
-    for (int i = 0; i < player.jumlahitem; i++){
-        cout<<i+1 << "." << player.inventory[i].nama << " (Lvl "<< player.inventory[i].stat_i.lvl << ")\n";
-    }
-    
-}
-
-bool buang_item(int n){
-    if(n < 0 || n >= player.jumlahitem){
-        cout<<"Tidak ada item pada no tersebut\n";
-        return false;
-    }
+void buang_item(int n){
     for(int i = n; i < player.jumlahitem - 1; i++){
         player.inventory[i] = player.inventory[i+1];
     }
     player.jumlahitem--;
-    return true;
 }
 
 bool tambah_item(item baru){
-    
     if (player.jumlahitem >= 50){
         cout<<"Inventory Penuh\n";
         return false;
@@ -169,17 +155,17 @@ bool tambah_item(item baru){
     return true;
 }
 
-void menu_ambil_buang(item barang){
+void menu_ambil_buang(item item){
     int pilih;
-    cout<<"Anda mendapatkan item " << barang.nama <<"!\n";
+    cout<<"Anda mendapatkan item " << item.nama <<"!\n";
     cout<<"-------------------------------------------------\n";
     cout<<"Stat Item :\n";
-    cout<<"Hp : " << barang.stat_i.hp << "\n";
-    cout<<"Physical Attack : " << barang.stat_i.physical_atk << "\n";
-    cout<<"Magical Attack : " << barang.stat_i.magical_atk << "\n";
-    cout<<"Physical Defense : " << barang.stat_i.physical_def << "\n";
-    cout<<"Magical Defense : " << barang.stat_i.magical_def << "\n";
-    cout<<"Level : " << barang.stat_i.lvl << "\n";
+    cout<<"Hp : " << item.stat_i.hp << "\n";
+    cout<<"Physical Attack : " << item.stat_i.physical_atk << "\n";
+    cout<<"Magical Attack : " << item.stat_i.magical_atk << "\n";
+    cout<<"Physical Defense : " << item.stat_i.physical_def << "\n";
+    cout<<"Magical Defense : " << item.stat_i.magical_def << "\n";
+    cout<<"Level : " << item.stat_i.lvl << "\n";
     cout<<"-------------------------------------------------\n";
     cout<<"Pilih aksi anda\n";
     cout<<"1. Simpan Item\n";
@@ -187,7 +173,7 @@ void menu_ambil_buang(item barang){
     cout<<": "; cin >> pilih;
     switch (pilih){
         case 1 :
-            tambah_item(barang);
+            tambah_item(item);
             break;
         case 2 :
             cout<<"Item Telah Dibuang\n";
@@ -243,26 +229,52 @@ void quick_sort(item arr[], int low, int high, int mode, int urut){
 
 //----QUICKSORT
 
-void menu_sort(){
-    if(player.jumlahitem <= 0){
+void menu_sort(bool kosong){
+    if(kosong){
         cout<<"Inventory Kosong\n";
+        pause();
+        system("cls");
         return;
     }
     int tipe;
     int urutan;
-    cout<<"Sorting Inventory\n";
+    cout<<"Urutkan Inventory\n";
     cout<<"1. Berdasarkan nama\n";
     cout<<"2. Berdasarkan level\n";
+    cout<<"3. Kembali\n";
     cout<<": ";cin >> tipe;
-
+    if(tipe == 3){
+        system("cls");
+        return;
+    }
+    if(tipe < 1 || tipe > 3){
+        cout<<"Tolong pilih antara 1 sampai 3 saja!\n";
+        pause();
+        system("cls");
+        return;
+    }
+    cout<<"-------------------------------------------------\n";
     cout<<"1. Terbesar ke Terkecil\n";
     cout<<"2. Terkecil ke Terbesar\n";
+    cout<<"3. Kembali\n";
     cout<<": ";cin >> urutan;
-
+    cout<<"-------------------------------------------------\n";
+    if(urutan < 1 || urutan > 2){
+        cout<<"Tolong pilih antara 1 sampai 2 saja!\n";
+        pause();
+        system("cls");
+        return;
+    }
+    if(urutan == 3){
+        system("cls");
+        return;
+    }
     bool urut = (urutan == 1);
-
     quick_sort(player.inventory, 0, player.jumlahitem - 1 , tipe, urut);
     cout<<"Inventory telah diurutkan\n";
+    pause();
+    system("cls");
+    return;
 }
 
 // pengubah huruf kecil
@@ -273,86 +285,310 @@ string huruf_kecil(string kata){
     return kata;
 }
 
-void search_nama(string target, hambali &p){
+int search_nama(string target, int*& arr){
     bool ketemu = false;
     string target_low = huruf_kecil(target);
-
-    cout<<"Hasil pencarian untuk \"" << target << "\":\n";
-    for(int i = 0; i < p.jumlahitem; i++){
-        string nama_item = huruf_kecil(p.inventory[i].nama);
+    int counter = 0;
+    int temp[player.jumlahitem];
+    for(int i = 0; i < player.jumlahitem; i++){
+        string nama_item = huruf_kecil(player.inventory[i].nama);
         if(nama_item.find(target_low) != string::npos){
-            cout<<"Slot " << i+1 << "." << p.inventory[i].nama << " (Lvl "<< p.inventory[i].stat_i.lvl << ")\n";
+            temp[counter] = i;
+            counter += 1;
         ketemu = true; }
     }
-    if(!ketemu) cout<<"Item tidak ditemukan.\n";
-    cout<<endl;
-    cout<<"-------------------------------------------------\n";
-    
+    arr = new int[counter];
+    if(ketemu){
+        for(int j = 0; j < counter; j++){
+            arr[j] = temp[j];
+        }
+    }
+    return counter;
 }
 
-void search_level(int target_lvl, hambali &p){
+int search_level(int target_lvl, int*& arr){
     bool ketemu = false;
-    cout<<"Hasil pencarian untuk level: \"" << target_lvl << "\":\n";
-    for(int i = 0; i < p.jumlahitem; i++){
-        if(p.inventory[i].stat_i.lvl == target_lvl){
-            cout<<"Slot " << i+1 << ". " << p.inventory[i].nama << " (Lvl "<< p.inventory[i].stat_i.lvl << ")\n";
+    int counter = 0;
+    int temp[player.jumlahitem];
+    for(int i = 0; i < player.jumlahitem; i++){
+        if(player.inventory[i].stat_i.lvl == target_lvl){
+            temp[counter] = i;
+            counter += 1;
             ketemu = true;
         }
     }
-    if(!ketemu) cout<<"Item tidak ditemukan.\n";
-    cout<<endl;
-    cout<<"-------------------------------------------------\n";
-    
+    arr = new int[counter];
+    if(ketemu){
+        for(int j = 0; j < counter; j++){
+            arr[j] = temp[j];
+        }
+    }
+    return counter;
 }
 
-void menu_Inventory(){
-    int pilih;
-    int no;
-    int target_lvl;
-    string nama_cari;
-    while(pilih != 3){
-        cout<<"Menu - Inventory\n";
-        cout<<"1. Lihat Inventory\n";
-        cout<<"2. Buang Item\n";
-        cout<<"3. Sorting Inventory\n";
-        cout<<"4. Searching Inventory (By Name)\n";
-        cout<<"5. Searching Inventory (By Level)\n";
-        cout<<"6. Kembali\n";
-        cout<<":";cin >> pilih;
-        switch (pilih){
+bool aksi_item(int idx){
+    //return true berarti lanjut loop aksi_item
+    //return false berarti keluar ke loop list_inventory
+    char buang;
+    int menu;
+    int piece = player.inventory[idx].tipe;
+    item item = player.inventory[idx];
+    while(true){
+        cout<<"-----------------Pilih aksi anda-----------------\n";
+        cout<<"Nama : "<<item.nama<<'\n';
+        cout<<"Level : " <<item.stat_i.lvl<<'\n';
+        cout<<"Hp : " <<item.stat_i.hp<<'\n';
+        cout<<"Physical attack : "<<item.stat_i.physical_atk<<'\n';
+        cout<<"Physical defense : "<<item.stat_i.physical_def<<'\n';
+        cout<<"Magical attack : "<<item.stat_i.magical_atk<<'\n';
+        cout<<"Magical defense : "<<item.stat_i.magical_def<<'\n';
+        cout<<"-------------------------------------------------\n";
+        cout<<"Stat item\n";
+        cout<<"1. Pakai item\n";
+        cout<<"2. Buang item\n";
+        cout<<"3. Kembali\n";
+        cout<<": ";
+        cin>>menu;
+        cout<<"-------------------------------------------------\n";
+        switch(menu){
             case 1:
-                isi_inventory();
+                player.slot[piece].equipment = item;
+                player.slot[piece].kosong = false;
+                buang_item(idx);//item yg dipakai bakal dihilangin dari inventory
+                cout<<"Item berhasil di pakai\n";
+                pause();
+                system("cls");
+                return true;
                 break;
             case 2:
-                isi_inventory();
-                cout<<"Pilih item yang mau dibuang:";cin >> no;
-                buang_item(no - 1);
+                cout<<"Apakah anda yakin? (y/n) : ";
+                cin>>buang;
+                if(buang != 'y'){
+                    continue;
+                }
+                buang_item(idx);
+                system("cls");
+                return false;
                 break;
             case 3:
-                menu_sort();
-                break;
-            case 4:
-                cout<<"Masukkan nama item yang ingin dicari: "; 
-                cin.ignore();
-                getline(cin, nama_cari);
-                search_nama(nama_cari, player);
-                break;
-            case 5:
-                cout<<"Masukkan level item yang ingin dicari: ";
-                cin >> target_lvl;
-                search_level(target_lvl, player);
-                break;
-            case 6:
                 system("cls");
+                return true;
                 break;
-        default:
-            break;
+            default:
+                cout<<"Tolong pilih antara 1 sampai 3 saja!\n";
+                pause();
+                system("cls");
+                continue;
+                break;
         }
-
     }
 }
 
-item jatuh_barang(){
+bool list_item_cari(bool ketemu, int* arr, int ukuran){
+    int idx;
+    cout<<"--------------------List item--------------------\n";
+    cout<<"1. Kembali\n";
+    cout<<"-------------------------------------------------\n";
+    
+    if(!ketemu){
+        cout<<"Item tidak ditemukan\n";
+    }else{
+        for(int i = 0; i < ukuran; i++){
+            idx = arr[i];
+            cout<<idx + 4 << ". " << player.inventory[idx].nama << " (lvl "<< player.inventory[idx].stat_i.lvl << ")\n";
+        }
+    }
+    cout<<": ";
+    cin>>idx;
+    if(!ketemu && idx != 1){
+        system("cls");
+        return true;
+    }
+    if(idx < 1 || idx > (player.jumlahitem + 3)){
+        cek(player.jumlahitem);
+        cout<<"Tolong pilih antara 1 sampai "<<player.jumlahitem + 3<<" saja!\n";
+        pause();
+        system("cls");
+        return true;
+    }
+    if(idx == 1){
+        system("cls");
+        return false;
+    }else{
+        system("cls");
+        if(!aksi_item(idx-4)){
+            return false;
+        }
+        return true;
+    }
+    return true;
+}
+
+void menu_search(bool kosong){
+    int menu;
+    int level;
+    int ukuran;
+    int* arr;
+    string nama;
+    bool ketemu = false;
+    if(kosong){
+        cout<<"Inventory Kosong\n";
+        pause();
+        system("cls");
+        return;
+    }
+    cout<<"Cari Item\n";
+    cout<<"1. Cari dengan nama item\n";
+    cout<<"2. Cari dengan level item\n";
+    cout<<"3. Kembali\n";
+    cout<<": ";
+    cin>>menu;
+    cout<<"-------------------------------------------------\n";
+    switch(menu){
+        case 1:
+            cout<<"Masukkan nama item yang ingin dicari\n";
+            cout<<": "; 
+            cin.ignore();
+            getline(cin, nama);
+            ukuran = search_nama(nama, arr);
+            break;
+        case 2:
+            cout<<"Masukkan level item yang dicari\n";
+            cout<<": ";
+            cin>>level;
+            ukuran = search_level(level, arr);
+            break;
+        case 3:
+            system("cls");
+            return;
+            break;
+        default:
+            cout<<"Tolong pilih antara 1 sampai 3 saja!\n";
+            pause();
+            system("cls");
+            return;
+    }
+    if(ukuran > 0){
+        ketemu = true;
+    }
+    while(true){
+        system("cls");
+        if(!list_item_cari(ketemu, arr, ukuran)){
+            break;
+        };
+    }
+    return;
+}
+
+bool list_item(){
+    //return true berarti lanjut loop list_item
+    //return false berarti balik ke menu_inventory
+    int menu;
+    bool kosong = false;
+    if(player.jumlahitem == 0){
+        kosong = true;
+    }
+    
+    cout<<"--------------------List item--------------------\n";
+    cout<<"1. Kembali\n";
+    cout<<"2. Urutkan item\n";
+    cout<<"3. Cari item \n";
+    cout<<"-------------------------------------------------\n";
+    if(kosong){
+        cout<<"Inventory kosong\n";
+    }else{
+        for (int i = 0; i < player.jumlahitem; i++){
+            cout<<i+4 << ". " << player.inventory[i].nama << " (lvl "<< player.inventory[i].stat_i.lvl << ")\n";
+        }
+    }
+    cout<<"-------------------------------------------------\n";
+    cout<<": ";
+    cin>>menu;
+    cout<<"-------------------------------------------------\n";
+    if(menu < 1 || menu > (player.jumlahitem + 3)){
+        cout<<"Tolong pilih antara 1 sampai "<<player.jumlahitem + 3<<" saja!\n";
+        pause();
+        system("cls");
+        return true;
+    }
+    if(menu == 1){
+        system("cls");
+        return false;
+    }else if(menu == 2){
+        menu_sort(kosong);
+        return true;
+    }else if(menu == 3){
+        menu_search(kosong);
+        return true;
+    }else{
+        system("cls");
+        aksi_item(menu - 4);
+        return true;
+    }
+    return false;
+}
+
+bool menu_inventory(){
+    //return true berarti lanjut loop menu_inventory
+    //return false berarti balik ke loop lantai
+    int pilih;
+    int no;
+    int target_lvl;
+    bool kosong;
+    if(player.jumlahitem == 0){
+        kosong = true;
+    }
+    string nama_cari;
+    cout<<"--------------------Inventory--------------------\n";
+    cout<<"Item yang sedang dipakai\n";
+    cout<<"-------------------------------------------------\n";
+    for(int i = 0; i < 4; i++){
+        switch(i){
+            case 0:
+                cout<<"Helm : ";
+                break;
+            case 1:
+                cout<<"Armor : ";
+                break;
+            case 2:
+                cout<<"Legging : ";
+                break;
+            case 3:
+                cout<<"Senjata : ";
+                break;
+        }
+        if(player.slot[i].kosong == true){
+            cout<<"tidak ada\n";
+        }else{
+            cout<<player.slot[i].equipment.nama<<" (lvl "<<player.slot[i].equipment.stat_i.lvl<<")\n";
+        }
+    }
+    cout<<"-------------------------------------------------\n";
+    cout<<"1. List item di Inventory\n";
+    cout<<"2. Kembali\n";
+    cout<<": ";cin >> pilih;
+    switch (pilih){
+        case 1:
+            system("cls");
+            while(true){
+                if(!list_item()){
+                    return true;
+                }else{
+                    continue;
+                }
+            }
+            break;
+        case 2:
+            system("cls");
+            return false;
+        default:
+            return false;
+            break;
+    }
+    return false;
+}
+
+item jatuh_item(){
     int jml_helm = sizeof(helm)/sizeof(helm[0]);
     int jml_armor = sizeof(armor)/sizeof(armor[0]);
     int jml_legging = sizeof(legging)/sizeof(legging[0]);
@@ -360,27 +596,27 @@ item jatuh_barang(){
     int rarity;
     srand(time(0));
     int piece = rand() % 4;//0 helm, 1 armor, 2 legging, 3 senjata
-    item barang;
+    item item;
     srand(time(0));
     switch(piece){
         case 0:
             rarity = rand() % jml_helm;
-            barang = helm[rarity];
+            item = helm[rarity];
             break;
         case 1:
             rarity = rand() % jml_armor;
-            barang = armor[rarity];
+            item = armor[rarity];
             break;
         case 2:
             rarity = rand() % jml_legging;
-            barang = legging[rarity];
+            item = legging[rarity];
             break;
         case 3:
             rarity = rand() % jml_senjata;
-            barang = senjata[rarity];
+            item = senjata[rarity];
             break;
     }
-    return barang;
+    return item;
 }
 
 int lantai(monster &musuh, int lantai){
@@ -490,18 +726,25 @@ int lantai(monster &musuh, int lantai){
                 tipe_dmg_player = 0;
                 break;
             case 3:
-                cout<<"Stat musuh :\n";
+                cout<<"Stat Musuh\n";
                 cek_stat(musuh.stat_m);
                 continue;
                 break;
             case 4:
-                cout<<"Stat anda :\n";
+                cout<<"Stat Anda\n";
                 cek_stat(player.stat_p);
                 continue;
                 break;
             
             case 5:
-                menu_Inventory();
+                system("cls");
+                while(true){
+                    if(menu_inventory()){
+                        continue;
+                    }else{
+                        break;
+                    }
+                }
                 continue;
                 break;
             case 6:
@@ -648,10 +891,11 @@ void buat_save_file_baru(){
 
     //isi save file
     save_file<<'\n'<<hp<<' '<<physical_atk<<' '<<magical_atk<<' '<<p_def<<' '<<m_def<<' '<<1;
-    save_file<<'\n'<<-1<<' '<<-1<<' '<<-1<<' '<<-1;
     save_file<<'\n'<<0;
     save_file<<'\n'<<1;
     save_file<<'\n'<<-1;
+    save_file<<'\n'<<1<<' '<<1<<' '<<1<<' '<<1;
+    save_file<<'\n'<<0;
     system("cls");
 
     //overview
@@ -675,60 +919,84 @@ void buat_save_file_baru(){
     struktur save file
     1. nama player -> string
     2. hp physical_atk magical_atk physical_def magical_def lvl -> integer
-    3. helm baju legging senjata -> integer(-1 kalo g ada equipment)
-    4. exp -> integer
+    3. exp -> integer
     5. lantai -> integer
     6. hp_musuh -> integer(-1 kalo masih save file baru)
+    kosong -> integer(slot equipment, klo 0 berarti kosong klo 1 berarti g kosong (perlu load itemnya))
+    item -> (klo kosong isinya bkn 0)
+    jml_item -> integer
+    item
+
+    struktur item
+    1. nama item -> string
+    2. hp physical_atk magical_atk physical_def magical_def lvl -> integer
 */
 
 void save(path sf_path){
     ofstream save_file(sf_path, ofstream::trunc | ofstream::out);
     save_file<<player.nama;
     save_file<<'\n'<<player.stat_p.hp<<' '<<player.stat_p.physical_atk<<' '<<player.stat_p.magical_atk<<' '<<player.stat_p.physical_def<<' '<<player.stat_p.magical_def<<' '<<player.stat_p.lvl;
-    save_file<<'\n'<<player.slot[0].idx<<' '<<player.slot[1].idx<<' '<<player.slot[2].idx<<' '<<player.slot[3].idx;
     save_file<<'\n'<<player.exp;
     save_file<<'\n'<<player.lantai;
     save_file<<'\n'<<player.hp_musuh;
+    for(int i = 0; i < 4; i++){
+        save_file<<'\n'<<player.slot[i].kosong;
+        if(!player.slot[i].kosong){
+            save_file<<'\n'<<player.slot[i].equipment.nama;
+            save_file<<'\n'<<player.slot[i].equipment.stat_i.hp<<' '<<player.slot[i].equipment.stat_i.physical_atk<<' '<<player.slot[i].equipment.stat_i.magical_atk<<' '<<player.slot[i].equipment.stat_i.physical_def<<' '<<player.slot[i].equipment.stat_i.magical_def<<' '<<player.slot[i].equipment.stat_i.lvl;
+        }
+    }
+    save_file<<'\n'<<player.jumlahitem;
+    for(int j = 0; j < player.jumlahitem; j++){
+        save_file<<'\n'<<player.inventory[j].nama;
+        save_file<<'\n'<<player.inventory[j].stat_i.hp<<' '<<player.inventory[j].stat_i.physical_atk<<' '<<player.inventory[j].stat_i.magical_atk<<' '<<player.inventory[j].stat_i.physical_def<<' '<<player.inventory[j].stat_i.magical_def<<' '<<player.inventory[j].stat_i.lvl;
+    }
+    save_file.close();
     cout<<"Save berhasil\n";
     pause();
 }
 
 void muat_sf(path sf_path){
     //inisialisasi player
-    int e_idx;
+    string nama;
     ifstream save_file(sf_path);
-    save_file>>player.nama;
+    getline(save_file, nama, '\n');
+    player.nama = nama;
     save_file>>player.stat_p.hp;
     save_file>>player.stat_p.physical_atk;
     save_file>>player.stat_p.magical_atk;
     save_file>>player.stat_p.physical_def;
     save_file>>player.stat_p.magical_def;
     save_file>>player.stat_p.lvl;
-    for(int i = 0; i < 4; i++){
-        save_file>>e_idx;
-        if(e_idx < 0){
-            player.slot[i].idx = -1;
-        }else{
-            player.slot[i].idx = e_idx;
-            switch(i){
-                case 0:
-                    player.slot[i].equipment = helm[e_idx];
-                    break;
-                case 1:
-                    player.slot[i].equipment = armor[e_idx];
-                    break;
-                case 2:
-                    player.slot[i].equipment = legging[e_idx];
-                    break;
-                case 3:
-                    player.slot[i].equipment = senjata[e_idx];
-                    break;
-            }
-        }
-    }
     save_file>>player.exp;
     save_file>>player.lantai;
     save_file>>player.hp_musuh;
+    for(int i = 0; i < 4; i++){
+        save_file>>player.slot[i].kosong;
+        if(!player.slot[i].kosong){
+            save_file.ignore();
+            getline(save_file, nama, '\n');
+            player.slot[i].equipment.nama = nama;
+            save_file>>player.slot[i].equipment.stat_i.hp;
+            save_file>>player.slot[i].equipment.stat_i.physical_atk;
+            save_file>>player.slot[i].equipment.stat_i.magical_atk;
+            save_file>>player.slot[i].equipment.stat_i.physical_def;
+            save_file>>player.slot[i].equipment.stat_i.magical_def;
+            save_file>>player.slot[i].equipment.stat_i.lvl;
+        }
+    }
+    save_file>>player.jumlahitem;
+    for(int j = 0; j < player.jumlahitem; j++){
+        save_file.ignore();
+        getline(save_file, nama, '\n');
+        player.inventory[j].nama = nama;
+        save_file>>player.inventory[j].stat_i.hp;
+        save_file>>player.inventory[j].stat_i.physical_atk;
+        save_file>>player.inventory[j].stat_i.magical_atk;
+        save_file>>player.inventory[j].stat_i.physical_def;
+        save_file>>player.inventory[j].stat_i.magical_def;
+        save_file>>player.inventory[j].stat_i.lvl;
+    }
     player.save_file = sf_path;
     save_file.close();
     cout<<"Save file berhasil dimuat\n";
@@ -896,15 +1164,6 @@ int main_menu(){
         case 2:
             return 2;
             break;
-        case 3:
-            
-            cek(sizeof(helm));
-            cek(sizeof(helm[0]));
-            cek(sizeof(helm)/sizeof(helm[0]));
-            getche();
-            system("cls");
-            return 3;
-            break;
     }
     return 3;
 }
@@ -961,15 +1220,16 @@ int main(){
             }
             if(rv_lantai == 1){
                 //logika klo menang disini
-                item barang;
+                item item;
                 //TEMP
                 cout<<"=================================================\n";
                 cout<<"Anda Menang!\n";
                 cout<<"-------------------------------------------------\n";
-                if((10+lvl_lantai) >= (rand()%(100 + (lvl_lantai * 2)))){//rumusnya probabilitasnya adalah (10 + lvl_lantai)/(10 + lvl_lantai * 2)
-                    cout<<"Musuh menjatuhkan barang!\n";
-                    barang = jatuh_barang();//sukses dpt barang
-                    menu_ambil_buang(barang);
+                //(10+lvl_lantai) >= (rand()%(100 + (lvl_lantai * 2)))
+                if(true){//rumusnya probabilitasnya adalah (10 + lvl_lantai)/(10 + lvl_lantai * 2)
+                    cout<<"Musuh menjatuhkan item!\n";
+                    item = jatuh_item();//sukses dpt item
+                    menu_ambil_buang(item);
                     cout<<"-------------------------------------------------\n";
                 }
                 pause();
