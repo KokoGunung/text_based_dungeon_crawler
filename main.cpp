@@ -31,7 +31,8 @@ struct e_slot
 
 struct hambali{
     int exp;
-    stats stat_p;
+    stats b_stat_p;//base stat
+    stats t_stat_p;//total stat
     //idx 0,1,2 berarti helm, armor, legging  3 berarti senjata
     e_slot slot[4];
     string nama;
@@ -124,17 +125,23 @@ int berlindung(stats stat, int tipe){
     return 0;
 }
 
-void cek_stat(stats stat){
+void cek_stat(stats stat, bool no_lvl = false, bool no_pause = false, bool no_clear = false){
+    if(!no_lvl){
+        cout<<"Level : " <<stat.lvl<<'\n';
+    }
     cout<<"-------------------------------------------------\n";
-    cout<<"Level : " <<stat.lvl<<'\n';
     cout<<"Hp : " <<stat.hp<<'\n';
     cout<<"Physical attack : "<<stat.physical_atk<<'\n';
     cout<<"Physical defense : "<<stat.physical_def<<'\n';
     cout<<"Magical attack : "<<stat.magical_atk<<'\n';
     cout<<"Magical defense : "<<stat.magical_def<<'\n';
     cout<<"-------------------------------------------------\n";
-    pause();
-    system("cls");
+    if(!no_pause){
+        pause();
+    }
+    if(!no_clear){
+        system("cls");
+    }
 }
 
 void buang_item(int n){
@@ -146,12 +153,10 @@ void buang_item(int n){
 
 bool tambah_item(item baru){
     if (player.jumlahitem >= 50){
-        cout<<"Inventory Penuh\n";
         return false;
     }
     player.inventory[player.jumlahitem] = baru;
     player.jumlahitem++;
-    cout<<baru.nama << " telah di tambahkan\n";
     return true;
 }
 
@@ -173,7 +178,11 @@ void menu_ambil_buang(item item){
     cout<<": "; cin >> pilih;
     switch (pilih){
         case 1 :
-            tambah_item(item);
+            if(tambah_item(item)){
+                cout<<item.nama << " telah di tambahkan\n";
+            }else{
+                cout<<"Inventory Penuh\n";
+            }
             break;
         case 2 :
             cout<<"Item Telah Dibuang\n";
@@ -352,9 +361,23 @@ bool aksi_item(int idx){
         cout<<"-------------------------------------------------\n";
         switch(menu){
             case 1:
-                player.slot[piece].equipment = item;
-                player.slot[piece].kosong = false;
-                buang_item(idx);//item yg dipakai bakal dihilangin dari inventory
+                if(!player.slot[piece].kosong){
+                    player.t_stat_p.hp -= player.slot[piece].equipment.stat_i.hp;
+                    player.t_stat_p.physical_atk -= player.slot[piece].equipment.stat_i.physical_atk;
+                    player.t_stat_p.magical_atk -= player.slot[piece].equipment.stat_i.magical_atk;
+                    player.t_stat_p.physical_def -= player.slot[piece].equipment.stat_i.physical_def;
+                    player.t_stat_p.magical_def -= player.slot[piece].equipment.stat_i.magical_def;
+                    player.inventory[idx] = player.slot[piece].equipment;//pindah item dari slot equipment ke inventory
+                }else{
+                    player.slot[piece].kosong = false;
+                    buang_item(idx);//item yg dipakai bakal dihilangin dari inventory
+                }
+                player.slot[piece].equipment = item;//pindah item dari inventory ke slot equipment
+                player.t_stat_p.hp += item.stat_i.hp;
+                player.t_stat_p.physical_atk += item.stat_i.physical_atk;
+                player.t_stat_p.magical_atk += item.stat_i.magical_atk;
+                player.t_stat_p.physical_def += item.stat_i.physical_def;
+                player.t_stat_p.magical_def += item.stat_i.magical_def;
                 cout<<"Item berhasil di pakai\n";
                 pause();
                 system("cls");
@@ -405,7 +428,6 @@ bool list_item_cari(bool ketemu, int* arr, int ukuran){
         return true;
     }
     if(idx < 1 || idx > (player.jumlahitem + 3)){
-        cek(player.jumlahitem);
         cout<<"Tolong pilih antara 1 sampai "<<player.jumlahitem + 3<<" saja!\n";
         pause();
         system("cls");
@@ -477,6 +499,8 @@ void menu_search(bool kosong){
             break;
         };
     }
+    delete[] arr;
+    arr = nullptr;
     return;
 }
 
@@ -528,18 +552,9 @@ bool list_item(){
     return false;
 }
 
-bool menu_inventory(){
-    //return true berarti lanjut loop menu_inventory
-    //return false berarti balik ke loop lantai
-    int pilih;
-    int no;
-    int target_lvl;
-    bool kosong;
-    if(player.jumlahitem == 0){
-        kosong = true;
-    }
-    string nama_cari;
-    cout<<"--------------------Inventory--------------------\n";
+bool menu_equipment(){
+    int menu;
+    cout<<"--------------------Equipment--------------------\n";
     cout<<"Item yang sedang dipakai\n";
     cout<<"-------------------------------------------------\n";
     for(int i = 0; i < 4; i++){
@@ -564,8 +579,109 @@ bool menu_inventory(){
         }
     }
     cout<<"-------------------------------------------------\n";
+    cout<<"1. Lepas item\n";
+    cout<<"2. Lihat detail item\n";
+    cout<<"3. Kembali\n";
+    cout<<": ";
+    cin>>menu;
+    cout<<"-------------------------------------------------\n";
+    switch(menu){
+        case 1:
+            cout<<"Item mana yang ingin di lepas?\n";
+            cout<<"1. Helm\n";
+            cout<<"2. Armor\n";
+            cout<<"3. Legging\n";
+            cout<<"4. Senjata\n";
+            cout<<": ";
+            cin>>menu;
+            menu -= 1;
+            cout<<"-------------------------------------------------\n";
+            if(menu < 0 || menu >= 4){
+                cout<<"Tolong pilih antara 1 sampai 4 saja\n";
+                pause();
+                system("cls");
+                return true;
+            }
+            if(player.slot[menu].kosong){
+                cout<<"Kosong\n";
+                pause();
+                system("cls");
+                return true;
+            }else{
+                tambah_item(player.slot[menu].equipment);
+                player.slot[menu].kosong = true;
+                player.t_stat_p.hp -= player.slot[menu].equipment.stat_i.hp;
+                player.t_stat_p.physical_atk -= player.slot[menu].equipment.stat_i.physical_atk;
+                player.t_stat_p.magical_atk -= player.slot[menu].equipment.stat_i.magical_atk;
+                player.t_stat_p.physical_def -= player.slot[menu].equipment.stat_i.physical_def;
+                player.t_stat_p.magical_def -= player.slot[menu].equipment.stat_i.magical_def;
+                cout<<player.slot[menu].equipment.nama<<" telah dilepas\n";
+                pause();
+                system("cls");
+                return true;
+            }
+            break;
+        case 2:
+            cout<<"Item mana yang ingin di cek?\n";
+            cout<<"1. Helm\n";
+            cout<<"2. Armor\n";
+            cout<<"3. Legging\n";
+            cout<<"4. Senjata\n";
+            cout<<": ";
+            cin>>menu;
+            menu -= 1;
+            cout<<"-------------------------------------------------\n";
+            if(menu < 0 || menu >= 4){
+                cout<<"Tolong pilih antara 1 sampai 4 saja\n";
+                pause();
+                system("cls");
+                return true;
+            }
+            if(player.slot[menu].kosong){
+                cout<<"Kosong\n";
+                pause();
+                system("cls");
+                return true;
+            }else{
+                system("cls");
+                cout<<"--------------------Cek detail--------------------\n";
+                cek_stat(player.slot[menu].equipment.stat_i);
+                return true;
+            }
+            break;
+        case 3:
+            system("cls");
+            return false;
+            break;
+        default:
+            system("cls");
+            return false;
+            break;
+    }
+
+}
+
+bool menu_inventory(){
+    //return true berarti lanjut loop menu_inventory
+    //return false berarti balik ke loop lantai
+    int pilih;
+    int no;
+    int target_lvl;
+    bool kosong;
+    if(player.jumlahitem == 0){
+        kosong = true;
+    }
+    string nama_cari;
+    cout<<"--------------------Inventory--------------------\n";
+    cout<<"Base stat\n";
+    cout<<"-------------------------------------------------\n";
+    cek_stat(player.b_stat_p, false, true, true);
+    cout<<"Total stat\n";
+    cek_stat(player.t_stat_p, true, true, true);
+    cout<<"Pilih aksi anda\n";
     cout<<"1. List item di Inventory\n";
-    cout<<"2. Kembali\n";
+    cout<<"2. List equipment\n";
+    cout<<"3. Kembali\n";
     cout<<": ";cin >> pilih;
     switch (pilih){
         case 1:
@@ -579,6 +695,16 @@ bool menu_inventory(){
             }
             break;
         case 2:
+            system("cls");
+            while(true){
+                if(!menu_equipment()){
+                    return true;
+                }else{
+                    continue;
+                }
+            }
+            break;
+        case 3:
             system("cls");
             return false;
         default:
@@ -655,6 +781,9 @@ int lantai(monster &musuh, int lantai){
         cout<<"========================== Lantai "<<lantai<<" ==========================\n";
         cout<<"Anda menemui musuh di depan anda!\n";
         cout<<"-------------------------------------------------\n";
+        cout<<"Hp anda : "<<player.t_stat_p.hp<<'\n';
+        cout<<"Hp musuh : "<<musuh.stat_m.hp<<'\n';
+        cout<<"-------------------------------------------------\n";
         if(aksi_musuh == 1 && tipe_dmg_musuh == 1){
             cout<<"Musuh akan menyerang dengan tipe serangan physical\n";
         }else if(aksi_musuh == 1 && tipe_dmg_musuh == 2){
@@ -665,7 +794,6 @@ int lantai(monster &musuh, int lantai){
         }else if(aksi_musuh == 2 && tipe_def_musuh == 2){
             cout<<"Musuh berlindung sebesar "<<def_musuh<<" magical defense\n";
         }
-
         cout<<"-----------------Pilih aksi anda-----------------\n";
         cout<<"1. Menyerang\n";
         cout<<"2. Berlindung\n";
@@ -687,10 +815,10 @@ int lantai(monster &musuh, int lantai){
                 cin>>tipe_dmg_player;
                 switch(tipe_dmg_player){
                     case 1: 
-                        dmg_player = serang(player.stat_p, tipe_dmg_player);
+                        dmg_player = serang(player.t_stat_p, tipe_dmg_player);
                         break;
                     case 2:
-                        dmg_player = serang(player.stat_p, tipe_dmg_player);
+                        dmg_player = serang(player.t_stat_p, tipe_dmg_player);
                         break;
                     case 3:
                         system("cls");
@@ -710,11 +838,11 @@ int lantai(monster &musuh, int lantai){
                 cin>>tipe_def_player;
                 switch(tipe_def_player){
                     case 1:
-                        def_player = berlindung(player.stat_p, tipe_def_player);
+                        def_player = berlindung(player.t_stat_p, tipe_def_player);
                         cout<<"Anda berlindung sebesar "<<def_player<<" physical defense\n";
                         break;
                     case 2:
-                        def_player = berlindung(player.stat_p, tipe_def_player);
+                        def_player = berlindung(player.t_stat_p, tipe_def_player);
                         cout<<"Anda berlindung sebesar "<<def_player<<" magical defense\n";
                         break;
                     case 3:
@@ -732,7 +860,7 @@ int lantai(monster &musuh, int lantai){
                 break;
             case 4:
                 cout<<"Stat Anda\n";
-                cek_stat(player.stat_p);
+                cek_stat(player.t_stat_p);
                 continue;
                 break;
             
@@ -783,21 +911,26 @@ int lantai(monster &musuh, int lantai){
         if(kerusakan_player <= 0){//kerusakan minimalnya 1
             kerusakan_player = 1;
         }
-        player.stat_p.hp -= kerusakan_player;
+        player.t_stat_p.hp -= kerusakan_player;
         if(tipe_dmg_musuh == 1){
             cout<<"Musuh memberikan damage sebesar "<<kerusakan_player<<" physical damage\n";
         }else if(tipe_dmg_musuh = 2){
             cout<<"Musuh memberikan damage sebesar "<<kerusakan_player<<" magical damage\n";
         }
     }
-    
+    cout<<"-------------------------------------------------\n";
+    cout<<"Sisa hp anda : "<<player.t_stat_p.hp<<'\n';
+    cout<<"Sisa hp musuh : "<<musuh.stat_m.hp<<'\n';
     if(musuh.stat_m.hp <= 0){
         cout<<"-------------------------------------------------\n";
         pause();
         system("cls");
+        if(player.t_stat_p.hp <= 0){
+            player.t_stat_p.hp = 1;
+        }
         return 1;
     }
-    if(player.stat_p.hp <= 0){
+    if(player.t_stat_p.hp <= 0){
         cout<<"-------------------------------------------------\n";
         pause();
         system("cls");
@@ -922,7 +1055,7 @@ void buat_save_file_baru(){
     3. exp -> integer
     5. lantai -> integer
     6. hp_musuh -> integer(-1 kalo masih save file baru)
-    kosong -> integer(slot equipment, klo 0 berarti kosong klo 1 berarti g kosong (perlu load itemnya))
+    kosong -> integer(slot equipment, klo 0 berarti g kosong (perlu load itemnya), klo 1 berarti kosong )
     item -> (klo kosong isinya bkn 0)
     jml_item -> integer
     item
@@ -930,12 +1063,13 @@ void buat_save_file_baru(){
     struktur item
     1. nama item -> string
     2. hp physical_atk magical_atk physical_def magical_def lvl -> integer
+    3. tipe -> integer
 */
 
 void save(path sf_path){
     ofstream save_file(sf_path, ofstream::trunc | ofstream::out);
     save_file<<player.nama;
-    save_file<<'\n'<<player.stat_p.hp<<' '<<player.stat_p.physical_atk<<' '<<player.stat_p.magical_atk<<' '<<player.stat_p.physical_def<<' '<<player.stat_p.magical_def<<' '<<player.stat_p.lvl;
+    save_file<<'\n'<<player.b_stat_p.hp<<' '<<player.b_stat_p.physical_atk<<' '<<player.b_stat_p.magical_atk<<' '<<player.b_stat_p.physical_def<<' '<<player.b_stat_p.magical_def<<' '<<player.b_stat_p.lvl;
     save_file<<'\n'<<player.exp;
     save_file<<'\n'<<player.lantai;
     save_file<<'\n'<<player.hp_musuh;
@@ -944,12 +1078,14 @@ void save(path sf_path){
         if(!player.slot[i].kosong){
             save_file<<'\n'<<player.slot[i].equipment.nama;
             save_file<<'\n'<<player.slot[i].equipment.stat_i.hp<<' '<<player.slot[i].equipment.stat_i.physical_atk<<' '<<player.slot[i].equipment.stat_i.magical_atk<<' '<<player.slot[i].equipment.stat_i.physical_def<<' '<<player.slot[i].equipment.stat_i.magical_def<<' '<<player.slot[i].equipment.stat_i.lvl;
+            save_file<<'\n'<<player.slot[i].equipment.tipe;
         }
     }
     save_file<<'\n'<<player.jumlahitem;
     for(int j = 0; j < player.jumlahitem; j++){
         save_file<<'\n'<<player.inventory[j].nama;
         save_file<<'\n'<<player.inventory[j].stat_i.hp<<' '<<player.inventory[j].stat_i.physical_atk<<' '<<player.inventory[j].stat_i.magical_atk<<' '<<player.inventory[j].stat_i.physical_def<<' '<<player.inventory[j].stat_i.magical_def<<' '<<player.inventory[j].stat_i.lvl;
+        save_file<<'\n'<<player.inventory[j].tipe;
     }
     save_file.close();
     cout<<"Save berhasil\n";
@@ -962,12 +1098,12 @@ void muat_sf(path sf_path){
     ifstream save_file(sf_path);
     getline(save_file, nama, '\n');
     player.nama = nama;
-    save_file>>player.stat_p.hp;
-    save_file>>player.stat_p.physical_atk;
-    save_file>>player.stat_p.magical_atk;
-    save_file>>player.stat_p.physical_def;
-    save_file>>player.stat_p.magical_def;
-    save_file>>player.stat_p.lvl;
+    save_file>>player.b_stat_p.hp;
+    save_file>>player.b_stat_p.physical_atk;
+    save_file>>player.b_stat_p.magical_atk;
+    save_file>>player.b_stat_p.physical_def;
+    save_file>>player.b_stat_p.magical_def;
+    save_file>>player.b_stat_p.lvl;
     save_file>>player.exp;
     save_file>>player.lantai;
     save_file>>player.hp_musuh;
@@ -983,6 +1119,7 @@ void muat_sf(path sf_path){
             save_file>>player.slot[i].equipment.stat_i.physical_def;
             save_file>>player.slot[i].equipment.stat_i.magical_def;
             save_file>>player.slot[i].equipment.stat_i.lvl;
+            save_file>>player.slot[i].equipment.tipe;
         }
     }
     save_file>>player.jumlahitem;
@@ -996,9 +1133,25 @@ void muat_sf(path sf_path){
         save_file>>player.inventory[j].stat_i.physical_def;
         save_file>>player.inventory[j].stat_i.magical_def;
         save_file>>player.inventory[j].stat_i.lvl;
+        save_file>>player.inventory[j].tipe;
     }
     player.save_file = sf_path;
     save_file.close();
+    player.t_stat_p.hp = player.b_stat_p.hp;
+    player.t_stat_p.physical_atk = player.b_stat_p.physical_atk;
+    player.t_stat_p.magical_atk = player.b_stat_p.magical_atk;
+    player.t_stat_p.physical_def = player.b_stat_p.physical_def;
+    player.t_stat_p.magical_def = player.b_stat_p.magical_def;
+    for(int k = 0; k < 4; k++){
+        if(!player.slot[k].kosong){
+            player.t_stat_p.hp += player.slot[k].equipment.stat_i.hp;
+            player.t_stat_p.physical_atk += player.slot[k].equipment.stat_i.physical_atk;
+            player.t_stat_p.magical_atk += player.slot[k].equipment.stat_i.magical_atk;
+            player.t_stat_p.physical_def += player.slot[k].equipment.stat_i.physical_def;
+            player.t_stat_p.magical_def += player.slot[k].equipment.stat_i.magical_def;
+        }
+    }
+    player.t_stat_p.lvl = player.b_stat_p.lvl;
     cout<<"Save file berhasil dimuat\n";
     cout<<"-------------------------------------------------------------------\n";
     pause();
@@ -1243,7 +1396,7 @@ int main(){
                 pause();
                 system("cls");
                 lvl_lantai = 1;
-                player.stat_p.hp = 10;
+                player.t_stat_p.hp = 10;
                 continue;
             }else if(rv_lantai == 3){
                 player.hp_musuh = musuh.stat_m.hp;
