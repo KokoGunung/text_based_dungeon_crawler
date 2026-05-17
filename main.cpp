@@ -33,7 +33,6 @@ struct hambali{
     int exp = 0;//exp player
     int max_xp = 100;//batas exp untuk naik level
     stats stat_p;
-    int exp;
     stats b_stat_p;//base stat
     stats t_stat_p;//total stat
     //idx 0,1,2 berarti helm, armor, legging  3 berarti senjata
@@ -946,21 +945,14 @@ int lantai(monster &musuh, int lantai){
 }
 
 // ak masih bingung bagian ini karena kaya nambahin stat dasar tp bukan stat tambahan dri item ehehe XD
-void tambah_exp(Player &p){
+void tambah_exp(){
     int exp_diterima = (rand()%(90-30+1)) + 30;
-    p.exp += exp_diterima;
-    p.stat_p.lvl = 1;//ini buat inisialisasi lvl permulaan player , ak masih ambigu disini cuman kalau ntar error kabarin aja #bachtiar
+    player.exp += exp_diterima;
+    player.stat_p.lvl = 1;//ini buat inisialisasi lvl permulaan player , ak masih ambigu disini cuman kalau ntar error kabarin aja #bachtiar
 
-    while(p.exp >= p.max_xp){
-        p.exp -= p.max_xp;
-        p.max_xp += 50;//setiap naik levelnya max exp yang harus di tambahin tambah jadi 50
-
-        p.stat_p.hp += 5;
-        p.stat_p.physical_atk += 2;
-        p.stat_p.magical_atk += 2;
-        p.stat_p.physical_def += 2;
-        p.stat_p.magical_def += 2;
-        p.stat_p.lvl += 1;  
+    while(player.exp >= player.max_xp){
+        player.exp -= player.max_xp;
+        player.max_xp += 50;//setiap naik levelnya max exp yang harus di tambahin tambah jadi 50
     }
 }
 
