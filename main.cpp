@@ -957,9 +957,9 @@ void level_up(){
     int poin_level = 5;
     while(poin_level > 0){
         system("cls");
-        cout<<"===========BUAT SAVE FILE BARU===========\n";
+        cout<<"====================LEVEL UP=====================\n";
         cout<<"Alokasikan poin stat anda\n";
-        cout<<"-------------------------------------\n";
+        cout<<"-------------------------------------------------\n";
         cout<<"Anda memiliki "<<poin_level<<" poin stat\n";
         cout<<"1. Vitality : "<<player.b_stat_p.vita<<'\n';
         cout<<"2. Physical attack : "<<player.b_stat_p.physical_atk<<'\n';
@@ -994,8 +994,9 @@ void level_up(){
     player.t_stat_p.magical_atk += player.b_stat_p.magical_atk;
     player.t_stat_p.physical_def += player.b_stat_p.physical_def;
     player.t_stat_p.magical_def += player.b_stat_p.magical_def;
-
-    pause();
+    system("cls");
+    cout<<"====================LEVEL UP=====================\n";
+    cek_stat(player.b_stat_p);
     system("cls");
 }
 
