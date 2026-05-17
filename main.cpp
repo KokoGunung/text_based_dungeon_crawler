@@ -196,11 +196,11 @@ void menu_ambil_buang(item item){
 void swap_item(item &a, item &b){
     item temp = a;
     a = b;
-    b = a;
+    b = temp;
 }
 
 //QUICKSORT----
-int partition(item arr[], int low, int high, int mode, int urut){
+int partition(item arr[], int low, int high, int mode, bool urut){
     item pivot = arr[high];
     int i = low -1;
 
@@ -208,26 +208,26 @@ int partition(item arr[], int low, int high, int mode, int urut){
         bool kondisi = false;
         if(mode == 1){
             if(urut)
-                kondisi = arr[j].nama < pivot.nama;
-            else
                 kondisi = arr[j].nama > pivot.nama;
+            else
+                kondisi = arr[j].nama < pivot.nama;
         }
         else if(mode == 2){
             if(urut)
-                kondisi = arr[j].stat_i.lvl < pivot.stat_i.lvl;
-            else
                 kondisi = arr[j].stat_i.lvl > pivot.stat_i.lvl;
+            else
+                kondisi = arr[j].stat_i.lvl < pivot.stat_i.lvl;
         }
         if(kondisi){
             i++;
             swap_item(arr[i], arr[j]);
         }
-        swap_item(arr[i+1], arr[high]);
-        return(i+1);
     }
+    swap_item(arr[i+1], arr[high]);
+    return(i+1);
 }
 
-void quick_sort(item arr[], int low, int high, int mode, int urut){
+void quick_sort(item arr[], int low, int high, int mode, bool urut){
     if(low < high){
         int pi = partition(arr, low, high, mode, urut);
 
