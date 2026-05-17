@@ -33,7 +33,6 @@ struct hambali{
     int hp;
     int exp = 0;//exp player
     int max_xp = 100;//batas exp untuk naik level
-    stats stat_p;
     stats b_stat_p;//base stat
     stats t_stat_p;//total stat
     //idx 0,1,2 berarti helm, armor, legging  3 berarti senjata
@@ -947,21 +946,57 @@ int lantai(monster &musuh, int lantai){
 }
 
 // ak masih bingung bagian ini karena kaya nambahin stat dasar tp bukan stat tambahan dri item ehehe XD
-void tambah_exp(){
-    int exp_diterima = (rand()%(90-30+1)) + 30;//random acak untuk exp yang diterima player per lantai antara 30 s.d 90
-    player.exp += exp_diterima;
-    player.stat_p.lvl = 1;//ini buat inisialisasi lvl permulaan player
+void level_up(){
+    player.t_stat_p.vita -= player.b_stat_p.vita;
+    player.t_stat_p.physical_atk -= player.b_stat_p.physical_atk;
+    player.t_stat_p.magical_atk -= player.b_stat_p.magical_atk;
+    player.t_stat_p.physical_def -= player.b_stat_p.physical_def;
+    player.t_stat_p.magical_def -= player.b_stat_p.magical_def;
 
-    while(player.exp >= player.max_xp){
-        player.exp -= player.max_xp;
-        player.max_xp += 20;//setiap naik levelnya max exp yang di butuhin naik 20
-        player.stat_p.lvl += 1;
-        player.b_stat_p.vita += 20;
-        player.b_stat_p.physical_atk += 15;
-        player.b_stat_p.magical_atk += 15;
-        player.b_stat_p.physical_def += 10;
-        player.b_stat_p.magical_def += 10;
+    int menu_level_up;
+    int poin_level = 5;
+    while(poin_level > 0){
+        system("cls");
+        cout<<"===========BUAT SAVE FILE BARU===========\n";
+        cout<<"Alokasikan poin stat anda\n";
+        cout<<"-------------------------------------\n";
+        cout<<"Anda memiliki "<<poin_level<<" poin stat\n";
+        cout<<"1. Vitality : "<<player.b_stat_p.vita<<'\n';
+        cout<<"2. Physical attack : "<<player.b_stat_p.physical_atk<<'\n';
+        cout<<"3. Magical attack : "<<player.b_stat_p.magical_atk<<'\n';
+        cout<<"4. Physical defense : "<<player.b_stat_p.physical_def<<'\n';
+        cout<<"5. Magical defense : "<<player.b_stat_p.magical_def<<'\n';
+        cout<<": ";
+        cin>>menu_level_up;
+        switch(menu_level_up){
+            case 1:
+                player.b_stat_p.vita += 1;
+                break;
+            case 2:
+                player.b_stat_p.physical_atk += 1;
+                break;
+            case 3:
+                player.b_stat_p.magical_atk += 1;
+                break;
+            case 4:
+                player.b_stat_p.physical_def += 1;
+                break;
+            case 5:
+                player.b_stat_p.magical_def += 1;
+                break;
+        }
+        poin_level -= 1;
     }
+
+    player.t_stat_p.lvl = player.b_stat_p.lvl;
+    player.t_stat_p.vita += player.b_stat_p.vita;
+    player.t_stat_p.physical_atk += player.b_stat_p.physical_atk;
+    player.t_stat_p.magical_atk += player.b_stat_p.magical_atk;
+    player.t_stat_p.physical_def += player.b_stat_p.physical_def;
+    player.t_stat_p.magical_def += player.b_stat_p.magical_def;
+
+    pause();
+    system("cls");
 }
 
 path folder_save_file(){
@@ -1401,6 +1436,14 @@ int main(){
                 cout<<"=================================================\n";
                 cout<<"Anda Menang!\n";
                 cout<<"-------------------------------------------------\n";
+                int exp_diterima = (rand()%(90-30+1)) + 30;//random acak untuk exp yang diterima player per lantai antara 30 s.d 90
+                player.exp += exp_diterima;
+                if(player.exp >= player.max_xp){
+                    player.exp -= player.max_xp;
+                    player.max_xp += 50;//rumus untuk max xp selanjutnya, bisa diubah sesuai kebutuhan
+                    player.b_stat_p.lvl += 1;
+                    level_up();
+                }
                 //(10+lvl_lantai) >= (rand()%(100 + (lvl_lantai * 2)))
                 if(true){//rumusnya probabilitasnya adalah (10 + lvl_lantai)/(10 + lvl_lantai * 2)
                     cout<<"Musuh menjatuhkan item!\n";
