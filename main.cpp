@@ -12,7 +12,7 @@ using namespace filesystem;
 
 //structs
 struct stats{
-    int hp, physical_atk, magical_atk, physical_def, magical_def, lvl;
+    int vita, physical_atk, magical_atk, physical_def, magical_def, lvl;
 };
 
 struct item{
@@ -30,6 +30,7 @@ struct e_slot
 };
 
 struct hambali{
+    int hp;
     int exp = 0;//exp player
     int max_xp = 100;//batas exp untuk naik level
     stats stat_p;
@@ -47,6 +48,7 @@ struct hambali{
 };
 
 struct monster{
+    int hp;
     int tipe;
     stats stat_m;
 };
@@ -132,7 +134,7 @@ void cek_stat(stats stat, bool no_lvl = false, bool no_pause = false, bool no_cl
         cout<<"Level : " <<stat.lvl<<'\n';
     }
     cout<<"-------------------------------------------------\n";
-    cout<<"Hp : " <<stat.hp<<'\n';
+    cout<<"Vitality : " <<stat.vita<<'\n';
     cout<<"Physical attack : "<<stat.physical_atk<<'\n';
     cout<<"Physical defense : "<<stat.physical_def<<'\n';
     cout<<"Magical attack : "<<stat.magical_atk<<'\n';
@@ -167,7 +169,7 @@ void menu_ambil_buang(item item){
     cout<<"Anda mendapatkan item " << item.nama <<"!\n";
     cout<<"-------------------------------------------------\n";
     cout<<"Stat Item :\n";
-    cout<<"Hp : " << item.stat_i.hp << "\n";
+    cout<<"Vitality : " << item.stat_i.vita << "\n";
     cout<<"Physical Attack : " << item.stat_i.physical_atk << "\n";
     cout<<"Magical Attack : " << item.stat_i.magical_atk << "\n";
     cout<<"Physical Defense : " << item.stat_i.physical_def << "\n";
@@ -348,7 +350,7 @@ bool aksi_item(int idx){
         cout<<"-----------------Pilih aksi anda-----------------\n";
         cout<<"Nama : "<<item.nama<<'\n';
         cout<<"Level : " <<item.stat_i.lvl<<'\n';
-        cout<<"Hp : " <<item.stat_i.hp<<'\n';
+        cout<<"Vitality : " <<item.stat_i.vita<<'\n';
         cout<<"Physical attack : "<<item.stat_i.physical_atk<<'\n';
         cout<<"Physical defense : "<<item.stat_i.physical_def<<'\n';
         cout<<"Magical attack : "<<item.stat_i.magical_atk<<'\n';
@@ -364,7 +366,7 @@ bool aksi_item(int idx){
         switch(menu){
             case 1:
                 if(!player.slot[piece].kosong){
-                    player.t_stat_p.hp -= player.slot[piece].equipment.stat_i.hp;
+                    player.t_stat_p.vita -= player.slot[piece].equipment.stat_i.vita;
                     player.t_stat_p.physical_atk -= player.slot[piece].equipment.stat_i.physical_atk;
                     player.t_stat_p.magical_atk -= player.slot[piece].equipment.stat_i.magical_atk;
                     player.t_stat_p.physical_def -= player.slot[piece].equipment.stat_i.physical_def;
@@ -375,7 +377,7 @@ bool aksi_item(int idx){
                     buang_item(idx);//item yg dipakai bakal dihilangin dari inventory
                 }
                 player.slot[piece].equipment = item;//pindah item dari inventory ke slot equipment
-                player.t_stat_p.hp += item.stat_i.hp;
+                player.t_stat_p.vita += item.stat_i.vita;
                 player.t_stat_p.physical_atk += item.stat_i.physical_atk;
                 player.t_stat_p.magical_atk += item.stat_i.magical_atk;
                 player.t_stat_p.physical_def += item.stat_i.physical_def;
@@ -612,7 +614,7 @@ bool menu_equipment(){
             }else{
                 tambah_item(player.slot[menu].equipment);
                 player.slot[menu].kosong = true;
-                player.t_stat_p.hp -= player.slot[menu].equipment.stat_i.hp;
+                player.t_stat_p.vita -= player.slot[menu].equipment.stat_i.vita;
                 player.t_stat_p.physical_atk -= player.slot[menu].equipment.stat_i.physical_atk;
                 player.t_stat_p.magical_atk -= player.slot[menu].equipment.stat_i.magical_atk;
                 player.t_stat_p.physical_def -= player.slot[menu].equipment.stat_i.physical_def;
@@ -783,8 +785,8 @@ int lantai(monster &musuh, int lantai){
         cout<<"========================== Lantai "<<lantai<<" ==========================\n";
         cout<<"Anda menemui musuh di depan anda!\n";
         cout<<"-------------------------------------------------\n";
-        cout<<"Hp anda : "<<player.t_stat_p.hp<<'\n';
-        cout<<"Hp musuh : "<<musuh.stat_m.hp<<'\n';
+        cout<<"Hp anda : "<<player.hp<<'\n';
+        cout<<"Hp musuh : "<<musuh.hp<<'\n';
         cout<<"-------------------------------------------------\n";
         if(aksi_musuh == 1 && tipe_dmg_musuh == 1){
             cout<<"Musuh akan menyerang dengan tipe serangan physical\n";
@@ -895,7 +897,7 @@ int lantai(monster &musuh, int lantai){
         if(kerusakan_musuh <= 0){//kerusakan minimalnya 1
             kerusakan_musuh = 1;
         }
-        musuh.stat_m.hp -= kerusakan_musuh;
+        musuh.hp -= kerusakan_musuh;
         if(tipe_dmg_player == 1){
             cout<<"Kamu memberikan damage sebesar " << kerusakan_musuh << " physical damage\n";
         }else if(tipe_dmg_player == 2){
@@ -913,7 +915,7 @@ int lantai(monster &musuh, int lantai){
         if(kerusakan_player <= 0){//kerusakan minimalnya 1
             kerusakan_player = 1;
         }
-        player.t_stat_p.hp -= kerusakan_player;
+        player.hp -= kerusakan_player;
         if(tipe_dmg_musuh == 1){
             cout<<"Musuh memberikan damage sebesar "<<kerusakan_player<<" physical damage\n";
         }else if(tipe_dmg_musuh = 2){
@@ -921,18 +923,18 @@ int lantai(monster &musuh, int lantai){
         }
     }
     cout<<"-------------------------------------------------\n";
-    cout<<"Sisa hp anda : "<<player.t_stat_p.hp<<'\n';
-    cout<<"Sisa hp musuh : "<<musuh.stat_m.hp<<'\n';
-    if(musuh.stat_m.hp <= 0){
+    cout<<"Sisa hp anda : "<<player.hp<<'\n';
+    cout<<"Sisa hp musuh : "<<musuh.hp<<'\n';
+    if(musuh.hp <= 0){
         cout<<"-------------------------------------------------\n";
         pause();
         system("cls");
-        if(player.t_stat_p.hp <= 0){
-            player.t_stat_p.hp = 1;
+        if(player.t_stat_p.vita <= 0){
+            player.t_stat_p.vita = 1;
         }
         return 1;
     }
-    if(player.t_stat_p.hp <= 0){
+    if(player.hp <= 0){
         cout<<"-------------------------------------------------\n";
         pause();
         system("cls");
@@ -954,7 +956,7 @@ void tambah_exp(){
         player.exp -= player.max_xp;
         player.max_xp += 20;//setiap naik levelnya max exp yang di butuhin naik 20
         player.stat_p.lvl += 1;
-        player.b_stat_p.hp += 20;
+        player.b_stat_p.vita += 20;
         player.b_stat_p.physical_atk += 15;
         player.b_stat_p.magical_atk += 15;
         player.b_stat_p.physical_def += 10;
@@ -1007,14 +1009,14 @@ void buat_save_file_baru(){
     save_file<<nama_player;
 
     //alokasi poin stat
-    int hp = 10, physical_atk = 10, magical_atk = 10, p_def = 10, m_def = 10, poin = 10, menu;
+    int vita = 10, physical_atk = 10, magical_atk = 10, p_def = 10, m_def = 10, poin = 10, menu;
     while(poin > 0){
         system("cls");
         cout<<"===========BUAT SAVE FILE BARU===========\n";
         cout<<"Alokasikan poin stat anda\n";
         cout<<"-------------------------------------\n";
         cout<<"Anda memiliki "<<poin<<" poin stat\n";
-        cout<<"1. Hp : "<<hp<<'\n';
+        cout<<"1. Vitality : "<<vita<<'\n';
         cout<<"2. Physical attack : "<<physical_atk<<'\n';
         cout<<"3. Magical attack : "<<magical_atk<<'\n';
         cout<<"4. Physical defense : "<<p_def<<'\n';
@@ -1023,7 +1025,7 @@ void buat_save_file_baru(){
         cin>>menu;
         switch(menu){
             case 1:
-                hp += 1;
+                vita += 1;
                 break;
             case 2:
                 physical_atk += 1;
@@ -1042,7 +1044,7 @@ void buat_save_file_baru(){
     }
 
     //isi save file
-    save_file<<'\n'<<hp<<' '<<physical_atk<<' '<<magical_atk<<' '<<p_def<<' '<<m_def<<' '<<1;
+    save_file<<'\n'<<vita<<' '<<physical_atk<<' '<<magical_atk<<' '<<p_def<<' '<<m_def<<' '<<1;
     save_file<<'\n'<<0;
     save_file<<'\n'<<1;
     save_file<<'\n'<<-1;
@@ -1054,7 +1056,7 @@ void buat_save_file_baru(){
     cout<<"===========BUAT SAVE FILE BARU===========\n";
     cout<<"Nama : "<<nama_player<<'\n';
     cout<<"-------------------------------------\n";
-    cout<<"Hp : "<<hp<<'\n';
+    cout<<"Vitality : "<<vita<<'\n';
     cout<<"Physical attack : "<<physical_atk<<'\n';
     cout<<"Magical attack : "<<magical_atk<<'\n';
     cout<<"Physical defense : "<<p_def<<'\n';
@@ -1070,10 +1072,10 @@ void buat_save_file_baru(){
 /*
     struktur save file
     1. nama player -> string
-    2. hp physical_atk magical_atk physical_def magical_def lvl -> integer
+    2. vita physical_atk magical_atk physical_def magical_def lvl -> integer
     3. exp -> integer
     5. lantai -> integer
-    6. hp_musuh -> integer(-1 kalo masih save file baru)
+    6. vita_musuh -> integer(-1 kalo masih save file baru)
     kosong -> integer(slot equipment, klo 0 berarti g kosong (perlu load itemnya), klo 1 berarti kosong )
     item -> (klo kosong isinya bkn 0)
     jml_item -> integer
@@ -1081,14 +1083,14 @@ void buat_save_file_baru(){
 
     struktur item
     1. nama item -> string
-    2. hp physical_atk magical_atk physical_def magical_def lvl -> integer
+    2. vita physical_atk magical_atk physical_def magical_def lvl -> integer
     3. tipe -> integer
 */
 
 void save(path sf_path){
     ofstream save_file(sf_path, ofstream::trunc | ofstream::out);
     save_file<<player.nama;
-    save_file<<'\n'<<player.b_stat_p.hp<<' '<<player.b_stat_p.physical_atk<<' '<<player.b_stat_p.magical_atk<<' '<<player.b_stat_p.physical_def<<' '<<player.b_stat_p.magical_def<<' '<<player.b_stat_p.lvl;
+    save_file<<'\n'<<player.b_stat_p.vita<<' '<<player.b_stat_p.physical_atk<<' '<<player.b_stat_p.magical_atk<<' '<<player.b_stat_p.physical_def<<' '<<player.b_stat_p.magical_def<<' '<<player.b_stat_p.lvl;
     save_file<<'\n'<<player.exp;
     save_file<<'\n'<<player.lantai;
     save_file<<'\n'<<player.hp_musuh;
@@ -1096,14 +1098,14 @@ void save(path sf_path){
         save_file<<'\n'<<player.slot[i].kosong;
         if(!player.slot[i].kosong){
             save_file<<'\n'<<player.slot[i].equipment.nama;
-            save_file<<'\n'<<player.slot[i].equipment.stat_i.hp<<' '<<player.slot[i].equipment.stat_i.physical_atk<<' '<<player.slot[i].equipment.stat_i.magical_atk<<' '<<player.slot[i].equipment.stat_i.physical_def<<' '<<player.slot[i].equipment.stat_i.magical_def<<' '<<player.slot[i].equipment.stat_i.lvl;
+            save_file<<'\n'<<player.slot[i].equipment.stat_i.vita<<' '<<player.slot[i].equipment.stat_i.physical_atk<<' '<<player.slot[i].equipment.stat_i.magical_atk<<' '<<player.slot[i].equipment.stat_i.physical_def<<' '<<player.slot[i].equipment.stat_i.magical_def<<' '<<player.slot[i].equipment.stat_i.lvl;
             save_file<<'\n'<<player.slot[i].equipment.tipe;
         }
     }
     save_file<<'\n'<<player.jumlahitem;
     for(int j = 0; j < player.jumlahitem; j++){
         save_file<<'\n'<<player.inventory[j].nama;
-        save_file<<'\n'<<player.inventory[j].stat_i.hp<<' '<<player.inventory[j].stat_i.physical_atk<<' '<<player.inventory[j].stat_i.magical_atk<<' '<<player.inventory[j].stat_i.physical_def<<' '<<player.inventory[j].stat_i.magical_def<<' '<<player.inventory[j].stat_i.lvl;
+        save_file<<'\n'<<player.inventory[j].stat_i.vita<<' '<<player.inventory[j].stat_i.physical_atk<<' '<<player.inventory[j].stat_i.magical_atk<<' '<<player.inventory[j].stat_i.physical_def<<' '<<player.inventory[j].stat_i.magical_def<<' '<<player.inventory[j].stat_i.lvl;
         save_file<<'\n'<<player.inventory[j].tipe;
     }
     save_file.close();
@@ -1117,7 +1119,7 @@ void muat_sf(path sf_path){
     ifstream save_file(sf_path);
     getline(save_file, nama, '\n');
     player.nama = nama;
-    save_file>>player.b_stat_p.hp;
+    save_file>>player.b_stat_p.vita;
     save_file>>player.b_stat_p.physical_atk;
     save_file>>player.b_stat_p.magical_atk;
     save_file>>player.b_stat_p.physical_def;
@@ -1132,7 +1134,7 @@ void muat_sf(path sf_path){
             save_file.ignore();
             getline(save_file, nama, '\n');
             player.slot[i].equipment.nama = nama;
-            save_file>>player.slot[i].equipment.stat_i.hp;
+            save_file>>player.slot[i].equipment.stat_i.vita;
             save_file>>player.slot[i].equipment.stat_i.physical_atk;
             save_file>>player.slot[i].equipment.stat_i.magical_atk;
             save_file>>player.slot[i].equipment.stat_i.physical_def;
@@ -1146,7 +1148,7 @@ void muat_sf(path sf_path){
         save_file.ignore();
         getline(save_file, nama, '\n');
         player.inventory[j].nama = nama;
-        save_file>>player.inventory[j].stat_i.hp;
+        save_file>>player.inventory[j].stat_i.vita;
         save_file>>player.inventory[j].stat_i.physical_atk;
         save_file>>player.inventory[j].stat_i.magical_atk;
         save_file>>player.inventory[j].stat_i.physical_def;
@@ -1156,14 +1158,14 @@ void muat_sf(path sf_path){
     }
     player.save_file = sf_path;
     save_file.close();
-    player.t_stat_p.hp = player.b_stat_p.hp;
+    player.t_stat_p.vita = player.b_stat_p.vita;
     player.t_stat_p.physical_atk = player.b_stat_p.physical_atk;
     player.t_stat_p.magical_atk = player.b_stat_p.magical_atk;
     player.t_stat_p.physical_def = player.b_stat_p.physical_def;
     player.t_stat_p.magical_def = player.b_stat_p.magical_def;
     for(int k = 0; k < 4; k++){
         if(!player.slot[k].kosong){
-            player.t_stat_p.hp += player.slot[k].equipment.stat_i.hp;
+            player.t_stat_p.vita += player.slot[k].equipment.stat_i.vita;
             player.t_stat_p.physical_atk += player.slot[k].equipment.stat_i.physical_atk;
             player.t_stat_p.magical_atk += player.slot[k].equipment.stat_i.magical_atk;
             player.t_stat_p.physical_def += player.slot[k].equipment.stat_i.physical_def;
@@ -1366,16 +1368,17 @@ int main(){
             monster musuh;
             musuh.stat_m.lvl = lvl_lantai * 2;
             int lvl_musuh = musuh.stat_m.lvl;
+            musuh.stat_m.vita = lvl_musuh * 5;
             if(init){
                 if(player.hp_musuh <= 0){
-                    musuh.stat_m.hp = lvl_musuh * 10;
+                    musuh.hp = musuh.stat_m.vita;
                     init = false;
                 }else{
-                    musuh.stat_m.hp = player.hp_musuh;
+                    musuh.hp = player.hp_musuh;
                     init = false; 
                 }
             }else{
-                musuh.stat_m.hp = lvl_musuh * 10;
+                musuh.hp = musuh.stat_m.vita;
             }
             musuh.stat_m.physical_atk = lvl_musuh * 5;
             musuh.stat_m.physical_def = lvl_musuh * 10;
@@ -1383,6 +1386,7 @@ int main(){
             musuh.stat_m.magical_def = lvl_musuh * 5;
             srand(time(0));
             musuh.tipe = (rand()%2)+1;
+            player.hp = player.t_stat_p.vita;
             //loop lantai
             while(true){
                 rv_lantai = lantai(musuh, lvl_lantai);
@@ -1415,10 +1419,10 @@ int main(){
                 pause();
                 system("cls");
                 lvl_lantai = 1;
-                player.t_stat_p.hp = 10;
+                player.t_stat_p.vita = 10;
                 continue;
             }else if(rv_lantai == 3){
-                player.hp_musuh = musuh.stat_m.hp;
+                player.hp_musuh = musuh.stat_m.vita;
                 player.lantai = lvl_lantai;
                 cout<<"Apakah anda ingin save progress anda? (y/n) : ";
                 cin>>s;
