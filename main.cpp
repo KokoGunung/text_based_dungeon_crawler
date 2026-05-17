@@ -946,13 +946,19 @@ int lantai(monster &musuh, int lantai){
 
 // ak masih bingung bagian ini karena kaya nambahin stat dasar tp bukan stat tambahan dri item ehehe XD
 void tambah_exp(){
-    int exp_diterima = (rand()%(90-30+1)) + 30;
+    int exp_diterima = (rand()%(90-30+1)) + 30;//random acak untuk exp yang diterima player per lantai antara 30 s.d 90
     player.exp += exp_diterima;
-    player.stat_p.lvl = 1;//ini buat inisialisasi lvl permulaan player , ak masih ambigu disini cuman kalau ntar error kabarin aja #bachtiar
+    player.stat_p.lvl = 1;//ini buat inisialisasi lvl permulaan player
 
     while(player.exp >= player.max_xp){
         player.exp -= player.max_xp;
-        player.max_xp += 50;//setiap naik levelnya max exp yang harus di tambahin tambah jadi 50
+        player.max_xp += 20;//setiap naik levelnya max exp yang di butuhin naik 20
+        player.stat_p.lvl += 1;
+        player.b_stat_p.hp += 20;
+        player.b_stat_p.physical_atk += 15;
+        player.b_stat_p.magical_atk += 15;
+        player.b_stat_p.physical_def += 10;
+        player.b_stat_p.magical_def += 10;
     }
 }
 
