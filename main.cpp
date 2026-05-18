@@ -1448,7 +1448,7 @@ int main(){
                     level_up();
                 }
                 //(10+lvl_lantai) >= (rand()%(100 + (lvl_lantai * 2)))
-                if(true){//rumusnya probabilitasnya adalah (10 + lvl_lantai)/(10 + lvl_lantai * 2)
+                if(true){//rumusnya probabilitasnya adalah (10 + lvl_lantai)/(100 + lvl_lantai * 2)
                     cout<<"Musuh menjatuhkan item!\n";
                     item = jatuh_item();//sukses dpt item
                     menu_ambil_buang(item);
