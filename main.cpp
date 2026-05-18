@@ -52,32 +52,96 @@ struct monster{
     stats stat_m;
 };
 
+//Variabel global
 hambali player;
-//temp
+
+//tier item buat physical
+/*
+    1. Copper
+    2. Iron
+    3. Tungsten
+    4. Platinum
+    5. Iridium
+    6. Mythril
+    7. Adamantium
+    8. Uranium
+*/
+
+//tier item buat magical
+/*
+    1. Brass
+    2. Silver
+    3. Gold
+    4. Demonite
+    5. Hellstone
+    6. Orichalcum
+    7. Brimstone
+    8. Luminite
+*/
+
 
 //armor & weapon untuk item
-item helm[5]={
-    {0,"helm copper", {0,0,0,25,0,2}},
-    {0,"helm silver", {0,0,0,27,0,2}},
-    {0,"helm gold", {0,0,0,36,6,3}},
-    {0,"helm platinum", {0,0,0,44,14,4}},
-    {0,"helm mythril", {0,0,0,52,22,5}}
+item helm[16]={
+    //Physical
+    {0,"Helm Copper",{2, 1, 0, 3, 3}},
+    {0,"Helm Iron",{4, 2, 0, 6, 6}},
+    {0,"Helm Tungsten",{8, 4, 0, 12, 12}},
+    {0,"Helm Platinum",{16, 8, 0, 24, 24}},
+    {0,"Helm Iridium",{32, 16, 0, 48, 48}},
+    {0,"Helm Mythril",{64, 32, 0, 96, 96}},
+    {0,"Helm Adamantium",{128, 64, 0, 192, 192}},
+    {0,"Helm Uranium",{256, 128, 0, 384, 384}},
+    //Magical
+    {0,"Helm Brass",{1, 0, 4, 2, 2}},
+    {0,"Helm Silver",{2, 0, 8, 4, 4}},
+    {0,"Helm Gold",{4, 0, 16, 8, 8}},
+    {0,"Helm Demonite",{8, 0, 32, 16, 16}},
+    {0,"Helm Hellstone",{16, 0, 64, 32, 32}},
+    {0,"Helm Orichalcum",{32, 0, 128, 64, 64}},
+    {0,"Helm Brimstone",{64, 0, 256, 128, 128}},
+    {0,"Helm Luminite",{128, 0, 512, 256, 256}}
 };
 
-item armor[5]={
-    {1,"armor copper", {0,0,0,30,0,1}},
-    {1,"armor silver", {0,0,0,35,0,1}},
-    {1,"armor gold", {0,0,0,44,14,2}},
-    {1,"armor platinum", {0,0,0,48,18,2}},
-    {1,"armor mythril", {0,0,0,67,33,3}}
+item armor[16]={
+    //physical
+    {1,"Armor Copper",{5, 3, 0, 7, 7}},
+    {1,"Armor Iron",{11, 7, 0, 15, 15}},
+    {1,"Armor Tungsten",{23, 15, 0, 31, 31}},
+    {1,"Armor Platinum",{47, 31, 0, 63, 63}},
+    {1,"Armor Iridium",{95, 63, 0, 127, 127}},
+    {1,"Armor Mythril",{191, 127, 0, 255, 255}},
+    {1,"Armor Adamantium",{383, 255, 0, 511, 511}},
+    {1,"Armor Uranium",{767, 511, 0, 1023, 1023}},
+    //magical
+    {1,"Armor Brass",{3, 0, 8, 4, 4}},
+    {1,"Armor Silver",{7, 0, 17, 9, 9}},
+    {1,"Armor Gold",{15, 0, 35, 19, 19}},
+    {1,"Armor Demonite",{31, 0, 71, 39, 39}},
+    {1,"Armor Hellstone",{63, 0, 143, 79, 79}},
+    {1,"Armor Orichalcum",{127, 0, 287, 159, 159}},
+    {1,"Armor Brimstone",{155, 0, 575, 319, 319}},
+    {1,"Armor Luminite",{311, 0, 1151, 639, 639}}
 };
 
-item legging[5]={
-    {2,"legging copper", {0,0,0,5,9,1}},
-    {2,"legging silver", {0,0,0,14,23,2}},
-    {2,"legging gold", {0,0,0,19,41,3}},
-    {2,"legging platinum", {0,0,0,23,57,4}},
-    {2,"legging mythril", {0,0,0,28,69,5}}
+item legging[16]={
+    //physical
+    {2,"Legging Copper",{3, 2, 0, 5, 5}},
+    {2,"Legging Iron",{8, 6, 0, 12, 12}},
+    {2,"Legging Tungsten",{18, 14, 0, 26, 26}},
+    {2,"Legging Platinum",{38, 30, 0, 54, 54}},
+    {2,"Legging Iridium",{78, 62, 0, 110, 110}},
+    {2,"Legging Mythril",{158, 126, 0, 222, 222}},
+    {2,"Legging Adamantium",{318, 254, 0, 446, 446}},
+    {2,"Legging Uranium",{638, 510, 0, 894, 894}},
+    //magical
+    {2,"Legging Brass",{2, 0, 6, 3, 3}},
+    {2,"Legging Silver",{6, 0, 14, 8, 8}},
+    {2,"Legging Gold",{14, 0, 30, 18, 18}},
+    {2,"Legging Demonite",{30, 0, 62, 38, 38}},
+    {2,"Legging Hellstone",{62, 0, 126, 78, 78}},
+    {2,"Legging Orichalcum",{126, 0, 254, 158, 158}},
+    {2,"Legging Brimstone",{254, 0, 510, 318, 318}},
+    {2,"Legging Luminite",{510, 0, 1022, 638, 638}}
 };
 
 item senjata[5]={
