@@ -55,35 +55,37 @@ struct monster{
 hambali player;
 //temp
 
-
 //armor & weapon untuk item
 item helm[5]={
-    {0,"helm copper", {0,0,0,5,0,1}},
-    {0,"helm silver", {0,0,0,10,0,2}},
-    {0,"helm gold", {0,0,0,15,0,3}},
-    {0,"helm platinum", {0,0,0,20,0,4}},
-    {0,"helm mythril", {0,0,0,25,0,5}}
+    {0,"helm copper", {0,0,0,25,0,2}},
+    {0,"helm silver", {0,0,0,27,0,2}},
+    {0,"helm gold", {0,0,0,36,6,3}},
+    {0,"helm platinum", {0,0,0,44,14,4}},
+    {0,"helm mythril", {0,0,0,52,22,5}}
 };
 
 item armor[5]={
-    {1,"armor copper", {0,0,0,10,0,1}},
-    {1,"armor silver", {0,0,0,20,0,2}},
-    {1,"armor gold", {0,0,0,30,0,3}},
-    {1,"armor platinum", {0,0,0,40,0,4}},
-    {1,"armor mythril", {0,0,0,50,0,5}}
+    {1,"armor copper", {0,0,0,30,0,1}},
+    {1,"armor silver", {0,0,0,35,0,1}},
+    {1,"armor gold", {0,0,0,44,14,2}},
+    {1,"armor platinum", {0,0,0,48,18,2}},
+    {1,"armor mythril", {0,0,0,67,33,3}}
 };
 
 item legging[5]={
-    {2,"legging copper", {0,0,0,5,0,1}},
-    {2,"legging silver", {0,0,0,10,0,2}},
-    {2,"legging gold", {0,0,0,15,0,3}},
-    {2,"legging platinum", {0,0,0,20,0,4}},
-    {2,"legging mythril", {0,0,0,25,0,5}}
+    {2,"legging copper", {0,0,0,5,9,1}},
+    {2,"legging silver", {0,0,0,14,23,2}},
+    {2,"legging gold", {0,0,0,19,41,3}},
+    {2,"legging platinum", {0,0,0,23,57,4}},
+    {2,"legging mythril", {0,0,0,28,69,5}}
 };
 
-item senjata[2]={
-    {3,"pedang copper", {0,10,0,0,0,1}},
-    {3,"pedang silver", {0,20,0,0,0,2}},
+item senjata[5]={
+    {3,"pedang copper", {0,10,10,0,0,1}},
+    {3,"pedang silver", {0,20,30,0,0,2}},
+    {3,"pedang gold", {0,43,36,0,0,3}},
+    {3,"pedang platinum", {0,37,45,0,0,4}},
+    {3,"pedang mythril", {0,67,53,0,0,5}}
 };
 
 //TEMP functions
