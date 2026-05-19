@@ -32,7 +32,7 @@ struct e_slot
 struct hambali{
     int hp;
     int exp = 0;//exp player
-    int max_xp = 100;//batas exp untuk naik level
+    int max_xp;//batas exp untuk naik level
     stats b_stat_p;//base stat
     stats t_stat_p;//total stat
     //idx 0,1,2 berarti helm, armor, legging  3 berarti senjata
@@ -80,7 +80,7 @@ hambali player;
 */
 
 
-//armor & weapon untuk item
+//Template armor & weapon untuk item
 item helm[16]={
     //Physical
     {0,"Helm Copper",{2, 1, 0, 3, 3}},
@@ -144,12 +144,25 @@ item legging[16]={
     {2,"Legging Luminite",{510, 0, 1022, 638, 638}}
 };
 
-item senjata[5]={
-    {3,"pedang copper", {0,10,10,0,0,1}},
-    {3,"pedang silver", {0,20,30,0,0,2}},
-    {3,"pedang gold", {0,43,36,0,0,3}},
-    {3,"pedang platinum", {0,37,45,0,0,4}},
-    {3,"pedang mythril", {0,67,53,0,0,5}}
+item senjata[16]={
+    //physical
+    {3,"Pedang Iron",{0, 7, 0, 0, 0}},
+    {3,"Pedang Copper",{0, 21, 0, 0, 0}},
+    {3,"Pedang Tungsten",{0, 63, 0, 0, 0}},
+    {3,"Pedang Platinum",{0, 189, 0, 0, 0}},
+    {3,"Pedang Iridium",{0, 567, 0, 0, 0}},
+    {3,"Pedang Mythril",{0, 1701, 0, 0, 0}},
+    {3,"Pedang Adamantium",{0, 5103, 0, 0, 0}},
+    {3,"Pedang Uranium",{0, 15309, 0, 0, 0}},
+    //magical
+    {3,"Tongkat Brass",{0, 0, 14, 0, 0}},
+    {3,"Tongkat Silver",{0, 0, 42, 0, 0}},
+    {3,"Tongkat Gold",{0, 0, 126, 0, 0}},
+    {3,"Tongkat Demonite",{0, 0, 378, 0, 0}},
+    {3,"Tongkat Hellstone",{0, 0, 1134, 0, 0}},
+    {3,"Tongkat Orichalcum",{0, 0, 3402, 0, 0}},
+    {3,"Tongkat Brimstone",{0, 0, 10206, 0, 0}},
+    {3,"Tongkat Luminite",{0, 0, 30618, 0, 0}}
 };
 
 //TEMP functions
@@ -232,15 +245,7 @@ bool tambah_item(item baru){
 void menu_ambil_buang(item item){
     int pilih;
     cout<<"Anda mendapatkan item " << item.nama <<"!\n";
-    cout<<"-------------------------------------------------\n";
-    cout<<"Stat Item :\n";
-    cout<<"Vitality : " << item.stat_i.vita << "\n";
-    cout<<"Physical Attack : " << item.stat_i.physical_atk << "\n";
-    cout<<"Magical Attack : " << item.stat_i.magical_atk << "\n";
-    cout<<"Physical Defense : " << item.stat_i.physical_def << "\n";
-    cout<<"Magical Defense : " << item.stat_i.magical_def << "\n";
-    cout<<"Level : " << item.stat_i.lvl << "\n";
-    cout<<"-------------------------------------------------\n";
+    cek_stat(item.stat_i, false, true, true);
     cout<<"Pilih aksi anda\n";
     cout<<"1. Simpan Item\n";
     cout<<"2. Buang Item\n";
@@ -732,7 +737,7 @@ bool menu_equipment(){
 
 bool menu_inventory(){
     //return true berarti lanjut loop menu_inventory
-    //return false berarti balik ke loop lantai
+    //return false berarti balik ke loop rest area
     int pilih;
     int no;
     int target_lvl;
@@ -783,7 +788,7 @@ bool menu_inventory(){
     return false;
 }
 
-item jatuh_item(){
+item jatuh_item(int lvl_lantai){
     int jml_helm = sizeof(helm)/sizeof(helm[0]);
     int jml_armor = sizeof(armor)/sizeof(armor[0]);
     int jml_legging = sizeof(legging)/sizeof(legging[0]);
@@ -811,6 +816,12 @@ item jatuh_item(){
             item = senjata[rarity];
             break;
     }
+    item.stat_i.lvl = lvl_lantai;
+    item.stat_i.vita = floor(float(item.stat_i.vita) * (float(lvl_lantai)/2.0));
+    item.stat_i.physical_atk = floor(float(item.stat_i.physical_atk) * (float(lvl_lantai)/2.0));
+    item.stat_i.magical_atk = floor(float(item.stat_i.magical_atk) * (float(lvl_lantai)/2.0));
+    item.stat_i.physical_def = floor(float(item.stat_i.physical_def) * (float(lvl_lantai)/2.0));
+    item.stat_i.magical_def = floor(float(item.stat_i.magical_def) * (float(lvl_lantai)/2.0));
     return item;
 }
 
@@ -823,15 +834,19 @@ int lantai(monster &musuh, int lantai){
     int aksi_musuh;
     int dmg_musuh;
     int dmg_player;
-    int tipe_dmg_musuh = musuh.tipe;
+    int tipe_dmg_musuh;
     int tipe_dmg_player;
     int def_musuh;
     int def_player;
-    int tipe_def_musuh = musuh.tipe;
+    int tipe_def_musuh;
     int tipe_def_player;
     int kerusakan_musuh;
     int kerusakan_player;
 
+    srand(time(0));
+    musuh.tipe = (rand()%2)+1;
+    tipe_dmg_musuh = musuh.tipe;
+    tipe_def_musuh = musuh.tipe;
     //aksi monster
     srand(time(0));
     aksi_musuh = (rand()%2)+1;
@@ -868,8 +883,7 @@ int lantai(monster &musuh, int lantai){
         cout<<"2. Berlindung\n";
         cout<<"3. Cek stat musuh\n";
         cout<<"4. Cek stat anda\n";
-        cout<<"5. Buka Inventory\n";
-        cout<<"6. Keluar\n";
+        cout<<"5. Keluar\n";
         cout<<": ";
         cin>>aksi_player;
         cout<<"-------------------------------------------------\n";
@@ -934,19 +948,10 @@ int lantai(monster &musuh, int lantai){
                 break;
             
             case 5:
-                system("cls");
-                while(true){
-                    if(menu_inventory()){
-                        continue;
-                    }else{
-                        break;
-                    }
-                }
-                continue;
-                break;
-            case 6:
-                system("cls");
                 return 3;
+                break;
+            default:
+                continue;
                 break;
         }
         break;
@@ -994,9 +999,6 @@ int lantai(monster &musuh, int lantai){
         cout<<"-------------------------------------------------\n";
         pause();
         system("cls");
-        if(player.t_stat_p.vita <= 0){
-            player.t_stat_p.vita = 1;
-        }
         return 1;
     }
     if(player.hp <= 0){
@@ -1011,8 +1013,57 @@ int lantai(monster &musuh, int lantai){
     return 0;
 }
 
+bool rest_area(int lantai){
+    //return 0 berarti lanjut lantai
+    //return 1 berarti lanjut loop rest area
+    //return 2 brearti keluar ke main menu
+    int menu;
+    char lanjut;
+    while(true){
+        cout<<"======================Rest Area======================\n";
+        cout<<"Apa yang ingin anda lakukan?\n";
+        cout<<"1. Buka inventory\n";
+        cout<<"2. Pergi ke lantai selanjutnya ("<<lantai + 1<<")\n";
+        cout<<"3. Keluar\n";
+        cout<<": ";
+        cin>>menu;
+        cout<<"-------------------------------------------------\n";
+        switch(menu){
+            case 1:
+                system("cls");
+                while(true){
+                    if(!menu_inventory()){
+                        system("cls");
+                        break;
+                    }
+                    continue;
+                }
+                continue;
+                break;
+            case 2:
+                cout<<"Apakah anda ingin pergi ke lantai"<<'\n'<<"selanjutnya?(y/n): ";
+                cin>>lanjut;
+                if(lanjut == 'y'){
+                    system("cls");
+                    return true;
+                }
+                system("cls");
+                continue;
+                break;
+            case 3:
+                return false;
+                break;
+            default:
+                system("cls");
+                continue;;
+                break;
+        }
+    }
+    return false;
+}
+
 // ak masih bingung bagian ini karena kaya nambahin stat dasar tp bukan stat tambahan dri item ehehe XD
-void level_up(){
+void level_up(int jml){
     player.t_stat_p.vita -= player.b_stat_p.vita;
     player.t_stat_p.physical_atk -= player.b_stat_p.physical_atk;
     player.t_stat_p.magical_atk -= player.b_stat_p.magical_atk;
@@ -1020,7 +1071,7 @@ void level_up(){
     player.t_stat_p.magical_def -= player.b_stat_p.magical_def;
 
     int menu_level_up;
-    int poin_level = 5;
+    int poin_level = 5 * jml;
     while(poin_level > 0){
         system("cls");
         cout<<"====================LEVEL UP=====================\n";
@@ -1147,7 +1198,7 @@ void buat_save_file_baru(){
 
     //isi save file
     save_file<<'\n'<<vita<<' '<<physical_atk<<' '<<magical_atk<<' '<<p_def<<' '<<m_def<<' '<<1;
-    save_file<<'\n'<<0;
+    save_file<<'\n'<<0<<' '<<100;
     save_file<<'\n'<<1;
     save_file<<'\n'<<-1;
     save_file<<'\n'<<1<<' '<<1<<' '<<1<<' '<<1;
@@ -1175,9 +1226,9 @@ void buat_save_file_baru(){
     struktur save file
     1. nama player -> string
     2. vita physical_atk magical_atk physical_def magical_def lvl -> integer
-    3. exp -> integer
-    5. lantai -> integer
-    6. vita_musuh -> integer(-1 kalo masih save file baru)
+    3. exp max_exp-> integer
+    5. lantai -> integer(minus kalo di rest area)
+    6. hp_musuh -> integer(-1 kalo masih save file baru)
     kosong -> integer(slot equipment, klo 0 berarti g kosong (perlu load itemnya), klo 1 berarti kosong )
     item -> (klo kosong isinya bkn 0)
     jml_item -> integer
@@ -1193,7 +1244,7 @@ void save(path sf_path){
     ofstream save_file(sf_path, ofstream::trunc | ofstream::out);
     save_file<<player.nama;
     save_file<<'\n'<<player.b_stat_p.vita<<' '<<player.b_stat_p.physical_atk<<' '<<player.b_stat_p.magical_atk<<' '<<player.b_stat_p.physical_def<<' '<<player.b_stat_p.magical_def<<' '<<player.b_stat_p.lvl;
-    save_file<<'\n'<<player.exp;
+    save_file<<'\n'<<player.exp<<' '<<player.max_xp;
     save_file<<'\n'<<player.lantai;
     save_file<<'\n'<<player.hp_musuh;
     for(int i = 0; i < 4; i++){
@@ -1228,6 +1279,7 @@ void muat_sf(path sf_path){
     save_file>>player.b_stat_p.magical_def;
     save_file>>player.b_stat_p.lvl;
     save_file>>player.exp;
+    save_file>>player.max_xp;
     save_file>>player.lantai;
     save_file>>player.hp_musuh;
     for(int i = 0; i < 4; i++){
@@ -1447,8 +1499,10 @@ int main_menu(){
 int main(){
     //game loop
     while(true){
+        char s;
         bool init;
         int lvl_lantai;
+        bool lanjut;
         //loop main menu
         while(true){
             int rv_main_menu = main_menu();
@@ -1462,14 +1516,33 @@ int main(){
                 continue;
             }
         }
+        
+        if(lvl_lantai < 0){
+            lvl_lantai *= -1;
+            lanjut = rest_area(lvl_lantai);
+            if(!lanjut){
+                player.lantai = lvl_lantai;
+                cout<<"Apakah anda ingin save progress anda? (y/n) : ";
+                cin>>s;
+                if(s == 'y'){
+                    if(player.lantai > 0){
+                        player.lantai *= -1;
+                    }
+                    save(player.save_file);
+                }
+                system("cls");
+                continue;
+            }else{
+                lvl_lantai += 1;
+            }
+        }
         //loop main
         while(true){
-            char s;
             int rv_lantai;
             //inisialisasi musuh
             monster musuh;
             musuh.stat_m.lvl = lvl_lantai * 2;
-            int lvl_musuh = musuh.stat_m.lvl;
+            int lvl_musuh = musuh.stat_m.lvl + player.t_stat_p.lvl;
             musuh.stat_m.vita = lvl_musuh * 5;
             if(init){
                 if(player.hp_musuh <= 0){
@@ -1486,8 +1559,6 @@ int main(){
             musuh.stat_m.physical_def = lvl_musuh * 10;
             musuh.stat_m.magical_atk = lvl_musuh * 10;
             musuh.stat_m.magical_def = lvl_musuh * 5;
-            srand(time(0));
-            musuh.tipe = (rand()%2)+1;
             player.hp = player.t_stat_p.vita;
             //loop lantai
             while(true){
@@ -1498,41 +1569,62 @@ int main(){
             }
             if(rv_lantai == 1){
                 //logika klo menang disini
+                srand(time(0));
+                int exp_diterima = 100 + ((rand()%player.max_xp + 1) * musuh.stat_m.lvl)/3;
                 item item;
-                //TEMP
                 cout<<"=================================================\n";
                 cout<<"Anda Menang!\n";
                 cout<<"-------------------------------------------------\n";
-                int exp_diterima = (rand()%(90-30+1)) + 30;//random acak untuk exp yang diterima player per lantai antara 30 s.d 90
-                player.exp += exp_diterima;
-                if(player.exp >= player.max_xp){
-                    player.exp -= player.max_xp;
-                    player.max_xp += 50;//rumus untuk max xp selanjutnya, bisa diubah sesuai kebutuhan
-                    player.b_stat_p.lvl += 1;
-                    level_up();
-                }
-                //(10+lvl_lantai) >= (rand()%(100 + (lvl_lantai * 2)))
-                if(true){//rumusnya probabilitasnya adalah (10 + lvl_lantai)/(100 + lvl_lantai * 2)
-                    cout<<"Musuh menjatuhkan item!\n";
-                    item = jatuh_item();//sukses dpt item
-                    menu_ambil_buang(item);
-                    cout<<"-------------------------------------------------\n";
-                }
+                cout<<"Anda mendapatkan "<<exp_diterima<<" exp\n";
                 pause();
                 system("cls");
+                player.exp += exp_diterima;
+                if(player.exp >= player.max_xp){
+                    int jml_lvl = 0;
+                    while(player.exp >= player.max_xp){
+                        player.exp -= player.max_xp;
+                        jml_lvl += 1;
+                    }
+                    player.max_xp += (50 * player.t_stat_p.lvl)/2;//rumus untuk max xp selanjutnya, bisa diubah sesuai kebutuhan
+                    player.b_stat_p.lvl += jml_lvl;
+                    level_up(jml_lvl);
+                }
+                if((30+lvl_lantai) >= (rand()%(100 + lvl_lantai * 2))){//rumusnya probabilitasnya adalah (40 + lvl_lantai)/(100 + lvl_lantai)
+                    cout<<"=================================================\n";
+                    cout<<"Musuh menjatuhkan item!\n";
+                    item = jatuh_item(lvl_lantai);//sukses dpt item
+                    menu_ambil_buang(item);
+                    cout<<"-------------------------------------------------\n";
+                    pause();
+                    system("cls");
+                }
+                lanjut = rest_area(lvl_lantai);
+                if(!lanjut){
+                    player.hp_musuh = musuh.hp;
+                    player.lantai = lvl_lantai;
+                    cout<<"Apakah anda ingin save progress anda? (y/n) : ";
+                    cin>>s;
+                    if(s == 'y'){
+                        if(player.lantai > 0){
+                            player.lantai *= -1;
+                        }
+                        save(player.save_file);
+                    }
+                    system("cls");
+                    break;
+                }
                 lvl_lantai += 1;
                 continue;
             }else if(rv_lantai == 2){
                 //logika klo kalah disini
-                //TEMP
                 cout<<"Anda kalah!\n";
+                cout<<"-------------------------------------------------\n";
+                cout<<"Game Berakhir!, anda akan kembali ke main menu\n";
                 pause();
                 system("cls");
-                lvl_lantai = 1;
-                player.t_stat_p.vita = 10;
-                continue;
+                break;
             }else if(rv_lantai == 3){
-                player.hp_musuh = musuh.stat_m.vita;
+                player.hp_musuh = musuh.hp;
                 player.lantai = lvl_lantai;
                 cout<<"Apakah anda ingin save progress anda? (y/n) : ";
                 cin>>s;
