@@ -1063,7 +1063,7 @@ bool rest_area(int lantai){
 }
 
 // ak masih bingung bagian ini karena kaya nambahin stat dasar tp bukan stat tambahan dri item ehehe XD
-void level_up(int jml){
+void level_up(){
     player.t_stat_p.vita -= player.b_stat_p.vita;
     player.t_stat_p.physical_atk -= player.b_stat_p.physical_atk;
     player.t_stat_p.magical_atk -= player.b_stat_p.magical_atk;
@@ -1071,7 +1071,7 @@ void level_up(int jml){
     player.t_stat_p.magical_def -= player.b_stat_p.magical_def;
 
     int menu_level_up;
-    int poin_level = 5 * jml;
+    int poin_level = 5;
     while(poin_level > 0){
         system("cls");
         cout<<"====================LEVEL UP=====================\n";
@@ -1583,11 +1583,13 @@ int main(){
                     int jml_lvl = 0;
                     while(player.exp >= player.max_xp){
                         player.exp -= player.max_xp;
-                        jml_lvl += 1;
+                        player.max_xp += ((50 * player.t_stat_p.lvl)/2);
+                        player.b_stat_p.lvl += jml_lvl;
+                        level_up();
                     }
-                    player.max_xp += (50 * player.t_stat_p.lvl)/2;//rumus untuk max xp selanjutnya, bisa diubah sesuai kebutuhan
-                    player.b_stat_p.lvl += jml_lvl;
-                    level_up(jml_lvl);
+                    //rumus untuk max xp selanjutnya, bisa diubah sesuai kebutuhan
+                    
+                    
                 }
                 if((30+lvl_lantai) >= (rand()%(100 + lvl_lantai * 2))){//rumusnya probabilitasnya adalah (40 + lvl_lantai)/(100 + lvl_lantai)
                     cout<<"=================================================\n";
