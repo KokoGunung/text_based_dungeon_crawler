@@ -39,7 +39,7 @@ struct hambali{
     e_slot slot[4];
     string nama;
     path save_file;//untuk save file
-    item inventory[50];
+    item inventory[3];
     int jumlahitem = 0;//Jumlah item sekarang
     //buat save system
     int lantai;
@@ -176,6 +176,7 @@ void cek(int param){//function buat ngeprint suatu int
 
 
 //functions
+bool list_item();
 void pause(){//buat ngepause
     cout<<"Tekan tombol apapun untuk lanjut\n";
     getche();
@@ -234,7 +235,8 @@ void buang_item(int n){
 }
 
 bool tambah_item(item baru){
-    if (player.jumlahitem >= 50){
+    int max = sizeof(player.inventory)/sizeof(player.inventory[0]);
+    if (player.jumlahitem == max){
         return false;
     }
     player.inventory[player.jumlahitem] = baru;
@@ -244,26 +246,59 @@ bool tambah_item(item baru){
 
 void menu_ambil_buang(item item){
     int pilih;
-    cout<<"Anda mendapatkan item " << item.nama <<"!\n";
-    cek_stat(item.stat_i, false, true, true);
-    cout<<"Pilih aksi anda\n";
-    cout<<"1. Simpan Item\n";
-    cout<<"2. Buang Item\n";
-    cout<<": "; cin >> pilih;
-    switch (pilih){
-        case 1 :
-            if(tambah_item(item)){
-                cout<<item.nama << " telah di tambahkan\n";
-            }else{
-                cout<<"Inventory Penuh\n";
-            }
-            break;
-        case 2 :
-            cout<<"Item Telah Dibuang\n";
-            break;
-    default:
-            cout<<"Pilihan Tidak Valid\n";
-            break;
+    int pilihan;
+    int no_pilih;
+    while(true){
+        cout<<"Anda mendapatkan item " << item.nama <<"!\n";
+        cek_stat(item.stat_i, false, true, true);
+        cout<<"Pilih aksi anda\n";
+        cout<<"1. Simpan Item\n";
+        cout<<"2. Buang Item\n";
+        cout<<": "; cin >> pilih;
+        cout<<"-------------------------------------------------\n";
+        switch (pilih){
+            case 1 :
+                if(tambah_item(item)){
+                    cout<<item.nama << " telah di tambahkan\n";
+                }else{
+                    cout<<"Inventory Penuh\n";
+                    cout << "Apakah anda ingin mengosongkan inventory?\n";
+                    cout << "1. Ya\n";
+                    cout << "2. Tidak\n";
+                    cout << ": ";cin >> pilihan;
+                    system("cls");
+                    if(pilihan == 1){
+                        while (true){
+                            if(!list_item())
+                                break;
+                            else 
+                                continue;
+                        }
+                        if(!tambah_item(item)){
+                            cout<<"-------------------------------------------------\n";
+                            cout<<"Inventory Masih Penuh\n";
+                            pause();
+                            system("cls");
+                            continue;
+                        }
+                        else{
+                            cout<<"-------------------------------------------------\n";
+                            cout << item.nama << " Telah ditambahkan\n";
+                        }
+                        break;
+                    }else{
+                        cout<<"Item Telah Dibuang\n";
+                    }
+                }
+                break;
+            case 2 :
+                cout<<"Item Telah Dibuang\n";
+                break;
+        default:
+                cout<<"Pilihan Tidak Valid\n";
+                break;
+        }
+        break;
     }
 }
 
@@ -1580,18 +1615,18 @@ int main(){
                 system("cls");
                 player.exp += exp_diterima;
                 if(player.exp >= player.max_xp){
-                    int jml_lvl = 0;
                     while(player.exp >= player.max_xp){
                         player.exp -= player.max_xp;
                         player.max_xp += ((50 * player.t_stat_p.lvl)/2);
-                        player.b_stat_p.lvl += jml_lvl;
+                        player.b_stat_p.lvl += 1;
                         level_up();
                     }
                     //rumus untuk max xp selanjutnya, bisa diubah sesuai kebutuhan
                     
                     
                 }
-                if((30+lvl_lantai) >= (rand()%(100 + lvl_lantai * 2))){//rumusnya probabilitasnya adalah (40 + lvl_lantai)/(100 + lvl_lantai)
+                //(40+lvl_lantai) >= (rand()%(100 + lvl_lantai * 2))
+                if(true){//rumusnya probabilitasnya adalah (40 + lvl_lantai)/(100 + lvl_lantai)
                     cout<<"=================================================\n";
                     cout<<"Musuh menjatuhkan item!\n";
                     item = jatuh_item(lvl_lantai);//sukses dpt item
