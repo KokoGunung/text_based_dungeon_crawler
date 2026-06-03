@@ -1624,8 +1624,8 @@ int main(){
                     
                     
                 }
-                //(40+lvl_lantai) >= (rand()%(100 + lvl_lantai * 2))
-                if(true){//rumusnya probabilitasnya adalah (40 + lvl_lantai)/(100 + lvl_lantai)
+                //
+                if((40+lvl_lantai) >= (rand()%(100 + lvl_lantai * 2))){//rumusnya probabilitasnya adalah (40 + lvl_lantai)/(100 + lvl_lantai)
                     cout<<"=================================================\n";
                     cout<<"Musuh menjatuhkan item!\n";
                     item = jatuh_item(lvl_lantai);//sukses dpt item
